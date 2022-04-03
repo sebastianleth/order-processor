@@ -51,7 +51,7 @@ namespace OrderProcessor.Messaging
         async Task<ImmutableArray<EnqueuedMessage>> EnqueueMessages()
         {
             var orderedMessages = Enumerable.Range(0, 3)
-                .Select(index => new EnqueuedMessage(new MessageId(Guid.NewGuid()), index))
+                .Select(index => new EnqueuedMessage(MessageId.New, index))
                 .ToImmutableArray();
 
             foreach (var message in orderedMessages)

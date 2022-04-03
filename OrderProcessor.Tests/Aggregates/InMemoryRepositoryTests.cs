@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using NodaTime;
+using OrderProcessor.Commands;
 using OrderProcessor.Domain;
 using OrderProcessor.Messaging;
 using Shouldly;
@@ -42,17 +44,20 @@ namespace OrderProcessor.Aggregates
         public async Task GivenExistingChangedAggregate_WhenSaveUnchangedSecondInstanceOfSameAggregate_ThenFailByOptimisticConcurrency()
         {
             var aggregateId = new CustomerId(Guid.NewGuid());
+            var time = Instant.MaxValue;
             var expected = Customer.Create(aggregateId, new CustomerState());
             await _sut.Save<CustomerId, Customer, CustomerState>(expected);
 
             var firstAggregateInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
             var secondAggregateInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
 
-            firstAggregateInstance.Handle(new CreateCustomerCommand(new MessageId(Guid.NewGuid()), "first@gmail.com"));
-            firstAggregateInstance.Handle(new PlaceOrderCommand(new MessageId(Guid.NewGuid()), 10));
+            firstAggregateInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
+            firstAggregateInstance.Handle(new PlaceOrder(MessageId.New, time, 10));
             await _sut.Save<CustomerId, Customer, CustomerState>(firstAggregateInstance);
 
-            secondAggregateInstance.Handle(new CreateCustomerCommand(new MessageId(Guid.NewGuid()), "second@gmail.com"));
+            var aaaa = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
+
+            secondAggregateInstance.Handle(new CreateCustomer(MessageId.New, time, "second@gmail.com"));
             var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Save<CustomerId, Customer, CustomerState>(secondAggregateInstance));
 
             exception.Message

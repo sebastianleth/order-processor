@@ -1,5 +1,9 @@
 ﻿using System.Collections.Immutable;
+using NodaTime;
 
 namespace OrderProcessor.Domain;
 
-public record Order(OrderId Id, ImmutableArray<OrderLine> Lines);
+public record Order(
+    OrderId Id, 
+    Instant Time,
+    decimal Total);

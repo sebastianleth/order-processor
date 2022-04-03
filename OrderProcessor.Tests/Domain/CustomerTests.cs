@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
-using OrderProcessor.Domain;
+using NodaTime;
+using OrderProcessor.Commands;
+using OrderProcessor.Messaging;
 using Shouldly;
 using Xunit;
 
@@ -9,9 +10,16 @@ namespace OrderProcessor.Domain
     public class CustomerTests
     {
         [Fact]
-        public async Task GivenNotAggregate_WhenLoad_ThenFail()
+        public void GivenCustomer_WhenCreate_ThenStatusRegular()
         {
+            var time = Instant.MaxValue;
+            var aggregateId = new CustomerId(Guid.NewGuid());
+            var customer = Customer.Create(aggregateId, new CustomerState());
 
+            customer.Handle(new CreateCustomer(MessageId.New, time, "sebastian@koderi.dk"));
+
+            customer.State.CustomerLevel
+                .ShouldBeAssignableTo<RegularLevel>();
         }
     }
 }
