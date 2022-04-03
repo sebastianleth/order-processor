@@ -14,7 +14,7 @@ namespace OrderProcessor.Aggregates
         readonly IAggregateRepository _sut = new InMemoryRepository();
 
         [Fact]
-        public async Task GivenNotAggregate_WhenLoad_ThenFail()
+        public async Task GivenNotExistingAggregate_WhenLoad_ThenFail()
         {
             var missingAggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
 
@@ -48,17 +48,17 @@ namespace OrderProcessor.Aggregates
             var aggregate = Customer.Create(aggregateId, new CustomerState());
             await _sut.Save<CustomerId, Customer, CustomerState>(aggregate);
 
-            var firstAggregateInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
-            var secondAggregateInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
+            var firstInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
+            var secondInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
 
-            firstAggregateInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
-            await _sut.Save<CustomerId, Customer, CustomerState>(firstAggregateInstance);
+            firstInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
+            await _sut.Save<CustomerId, Customer, CustomerState>(firstInstance);
 
-            secondAggregateInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
-            var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Save<CustomerId, Customer, CustomerState>(secondAggregateInstance));
+            secondInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
+            var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Save<CustomerId, Customer, CustomerState>(secondInstance));
 
             exception.Message
-                .ShouldBe($"Customer {secondAggregateInstance.Id} was changed by another actor");
+                .ShouldBe($"Customer {secondInstance.Id} was changed by another actor");
         }
     }
 }

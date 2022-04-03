@@ -9,18 +9,21 @@ namespace OrderProcessor.Domain
 
         private Customer(CustomerId id, CustomerState state) : base(id, state) { }
 
-        public void Handle(Commands.CreateCustomer command)
+        public Customer Handle(Commands.CreateCustomer command)
         {
             EnsureDoesNotExist();
 
             ApplyState(State with
             {
+                CreatedTime = command.Time,
                 Email = command.Email,
                 CustomerLevel = new RegularLevel()
             });
+
+            return this;
         }
 
-        public void Handle(Commands.PlaceOrder command)
+        public Order Handle(Commands.PlaceOrder command)
         {
             EnsureExists();
 
@@ -33,6 +36,8 @@ namespace OrderProcessor.Domain
                 CustomerLevel = customerLevel,
                 CustomerLevelChangeTime = CustomerLevelChanged(customerLevel) ? Now : State.CustomerLevelChangeTime
             });
+
+            return order;
         }
 
         Order CreateOrder(Commands.PlaceOrder command, ICustomerLevel customerLevel)
