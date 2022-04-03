@@ -1,14 +1,18 @@
-﻿using OrderProcessor.Persistence;
+﻿using OrderProcessor.Domain;
 
-namespace OrderProcessor.Domain;
+namespace OrderProcessor.Handlers;
 
-public class Handler
+public class CommandHandler : 
+    ICommandHandler<Commands.CreateCustomer>,
+    ICommandHandler<Commands.PlaceOrder>
 {
-    readonly IAggregateRepository _repository;
+    readonly Persistence.IAggregateRepository _repository;
+    readonly Email.ISender _emailSender;
 
-    public Handler(IAggregateRepository repository)
+    public CommandHandler(Persistence.IAggregateRepository repository, Email.ISender emailSender)
     {
         _repository = repository;
+        _emailSender = emailSender;
     }
 
     public async Task Handle(Commands.CreateCustomer command)
@@ -29,5 +33,6 @@ public class Handler
         customer.Handle(command);
 
         await _repository.Save<CustomerId, Customer, CustomerState>(customer);
+        await _emailSender.SendEmail("Order placed!");
     }
 }

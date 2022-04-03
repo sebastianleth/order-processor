@@ -2,7 +2,7 @@
 
 namespace OrderProcessor.Persistence
 {
-    class InMemoryRepository : IAggregateRepository
+    class InMemoryAggregateRepository : IAggregateRepository
     {
         readonly ConcurrentDictionary<Guid, AggregateData> _aggregates = new();
 

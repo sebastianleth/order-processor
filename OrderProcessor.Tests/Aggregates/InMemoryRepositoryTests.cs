@@ -12,7 +12,7 @@ namespace OrderProcessor.Aggregates
 {
     public class InMemoryRepositoryTests
     {
-        readonly IAggregateRepository _sut = new InMemoryRepository();
+        readonly IAggregateRepository _sut = new InMemoryAggregateRepository();
 
         [Fact]
         public async Task GivenNotExistingAggregate_WhenLoad_ThenFail()

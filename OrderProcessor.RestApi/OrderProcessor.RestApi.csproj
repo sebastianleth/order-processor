@@ -15,4 +15,8 @@
     <ProjectReference Include="..\OrderProcessor\OrderProcessor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Processing\" />
+  </ItemGroup>
+
 </Project>
