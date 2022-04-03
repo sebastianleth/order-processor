@@ -3,9 +3,9 @@ using NodaTime;
 
 namespace OrderProcessor.Domain;
 
-public static class LevelCalculator
+public static class CustomerLevelCalculator
 {
-    public static ILevel Determine(CustomerState customerState, Instant now)
+    public static ICustomerLevel Determine(CustomerState customerState, Instant now)
     {
         if (customerState.CustomerLevel is GoldLevel)
         {

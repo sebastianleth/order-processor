@@ -8,7 +8,7 @@ public record CustomerState : AggregateState
 {
     public string Email { get; init; }
     public Instant CreatedTime { get; init; }
-    public ILevel CustomerLevel { get; init; } = new RegularLevel();
+    public ICustomerLevel CustomerLevel { get; init; } = new RegularLevel();
     public Instant CustomerLevelChangeTime { get; init; }
     public ImmutableArray<Order> Orders { get; init; } = ImmutableArray<Order>.Empty;
 }

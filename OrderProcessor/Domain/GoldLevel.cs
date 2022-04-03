@@ -1,6 +1,6 @@
 ﻿namespace OrderProcessor.Domain;
 
-class GoldLevel : ILevel
+class GoldLevel : ICustomerLevel
 {
     public decimal Discount => 15;
 }

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using NodaTime;
 using OrderProcessor.Commands;
 using OrderProcessor.Domain;
 using OrderProcessor.Messaging;
-using OrderProcessor.Persistence;
 using Shouldly;
 using Xunit;
 
-namespace OrderProcessor.Aggregates
+namespace OrderProcessor.Persistence
 {
     public class InMemoryRepositoryTests
     {
