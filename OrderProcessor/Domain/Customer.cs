@@ -30,7 +30,8 @@ namespace OrderProcessor.Domain
             ApplyState(State with
             {
                 Orders = State.Orders.Append(order).ToImmutableArray(),
-                CustomerLevel = customerLevel
+                CustomerLevel = customerLevel,
+                CustomerLevelChangeTime = CustomerLevelChanged(customerLevel) ? Now : State.CustomerLevelChangeTime
             });
         }
 
@@ -39,8 +40,10 @@ namespace OrderProcessor.Domain
             var orderId = new OrderId(command.Id.Value);
             var total = command.Total * ((100 - customerLevel.Discount) / 100);
 
-            return new Order(orderId, Now, total); ;
+            return new Order(orderId, Now, total);
         }
+
+        bool CustomerLevelChanged(CustomerLevel customerLevel) => customerLevel.GetType() == State.CustomerLevel.GetType();
 
         static Instant Now => SystemClock.Instance.GetCurrentInstant();
     }

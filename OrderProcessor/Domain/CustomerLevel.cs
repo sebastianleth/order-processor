@@ -19,10 +19,12 @@ public abstract class CustomerLevel
 
         if (state.CustomerLevel is SilverLevel)
         {
-            if (orderSum > 600)
+            if (orderSum > 600 && state.CustomerLevelChangeTime < now.Minus(Duration.FromDays(7)))
             {
                 return new GoldLevel();
             }
+
+            return state.CustomerLevel;
         }
 
         if (state.CustomerLevel is RegularLevel)
