@@ -10,4 +10,8 @@
     <Folder Include="Processor\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="3.0.10" />
+  </ItemGroup>
+
 </Project>

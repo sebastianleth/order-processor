@@ -1,4 +1,4 @@
-namespace OrderProcessor.Ordering
+namespace OrderProcessor.Domain
 {
     public record PlaceOrderCommand(
         Messaging.MessageId Id,

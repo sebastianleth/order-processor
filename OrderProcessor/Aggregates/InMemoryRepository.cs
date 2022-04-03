@@ -6,7 +6,10 @@ namespace OrderProcessor.Aggregates
     {
         readonly ConcurrentDictionary<Guid, AggregateData> _aggregates = new();
 
-        public Task Save<T, TState>(T aggregate) where T : Aggregate<TState> where TState : new()
+        public Task Save<TAggregateId, T, TState>(T aggregate)
+            where TAggregateId : AggregateId
+            where T : Aggregate<TState> 
+            where TState : AggregateState, new()
         {
             // Optimistic concurrency
             if (AggregateExists(aggregate.Id) && AggregateChanged(aggregate.Id, aggregate.Version))
@@ -19,7 +22,10 @@ namespace OrderProcessor.Aggregates
             return Task.CompletedTask;
         }
 
-        public Task<T> Load<T, TState>(AggregateId aggregateId, Func<AggregateId, object, T> aggregateFactory) where T : Aggregate<TState> where TState : new()
+        public Task<T> Load<TAggregateId, T, TState>(TAggregateId aggregateId, Func<TAggregateId, TState, T> aggregateFactory)
+            where TAggregateId : AggregateId
+            where T : Aggregate<TState> 
+            where TState : AggregateState, new()
         {
             if (!AggregateExists(aggregateId))
             {
@@ -33,7 +39,9 @@ namespace OrderProcessor.Aggregates
             return Task.FromResult(aggregate);
         }
 
-        void WriteAggregateData<T, TState>(T aggregate) where T : Aggregate<TState> where TState : new()
+        void WriteAggregateData<T, TState>(T aggregate) 
+            where T : Aggregate<TState> 
+            where TState : new()
         {
             _aggregates[aggregate.Id.Value] = new AggregateData(aggregate.State!, aggregate.Version);
         }
