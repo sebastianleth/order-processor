@@ -1,4 +1,4 @@
-﻿namespace OrderProcessor.Aggregates;
+﻿namespace OrderProcessor.Persistence;
 
 public class DomainException : Exception
 {

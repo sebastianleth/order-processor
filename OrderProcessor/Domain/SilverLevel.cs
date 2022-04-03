@@ -1,6 +1,6 @@
 ﻿namespace OrderProcessor.Domain;
 
-class SilverLevel : ICustomerLevel
+class SilverLevel : ILevel
 {
     public decimal Discount => 10;
 }

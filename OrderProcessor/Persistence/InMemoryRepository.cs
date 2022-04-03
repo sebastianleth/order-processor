@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace OrderProcessor.Aggregates
+namespace OrderProcessor.Persistence
 {
     class InMemoryRepository : IAggregateRepository
     {

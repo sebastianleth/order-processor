@@ -1,6 +1,6 @@
 ﻿namespace OrderProcessor.Domain;
 
-public interface ICustomerLevel
+public interface ILevel
 {
     decimal Discount { get;  }
 

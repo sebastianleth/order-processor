@@ -1,3 +1,3 @@
-﻿namespace OrderProcessor.Aggregates;
+﻿namespace OrderProcessor.Persistence;
 
 public abstract record AggregateState();

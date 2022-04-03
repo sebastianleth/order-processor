@@ -1,4 +1,4 @@
-﻿using OrderProcessor.Aggregates;
+﻿using OrderProcessor.Persistence;
 
 namespace OrderProcessor.Domain;
 

@@ -1,9 +1,10 @@
 using System.Collections.Immutable;
 using NodaTime;
+using OrderProcessor.Persistence;
 
 namespace OrderProcessor.Domain
 {
-    public class Customer : Aggregates.Aggregate<CustomerState>
+    public class Customer : Aggregate<CustomerState>
     {
         public static Customer Create(CustomerId id, CustomerState state) => new(id, state);
 
@@ -27,7 +28,7 @@ namespace OrderProcessor.Domain
         {
             EnsureExists();
 
-            var customerLevel = CustomerLevelCalculator.Determine(State, Now);
+            var customerLevel = LevelCalculator.Determine(State, Now);
             var order = CreateOrder(command, customerLevel);
 
             ApplyState(State with
@@ -40,7 +41,7 @@ namespace OrderProcessor.Domain
             return order;
         }
 
-        Order CreateOrder(Commands.PlaceOrder command, ICustomerLevel customerLevel)
+        Order CreateOrder(Commands.PlaceOrder command, ILevel customerLevel)
         {
             var orderId = new OrderId(command.Id.Value);
             var total = command.Total * ((100 - customerLevel.Discount) / 100);
@@ -48,7 +49,7 @@ namespace OrderProcessor.Domain
             return new Order(orderId, Now, total);
         }
 
-        bool CustomerLevelChanged(ICustomerLevel customerLevel) => customerLevel.GetType() == State.CustomerLevel.GetType();
+        bool CustomerLevelChanged(ILevel customerLevel) => customerLevel.GetType() == State.CustomerLevel.GetType();
 
         static Instant Now => SystemClock.Instance.GetCurrentInstant();
     }

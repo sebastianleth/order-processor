@@ -1,4 +1,4 @@
-﻿namespace OrderProcessor.Aggregates;
+﻿namespace OrderProcessor.Persistence;
 
 public abstract class Aggregate<TState> where TState : new()
 {

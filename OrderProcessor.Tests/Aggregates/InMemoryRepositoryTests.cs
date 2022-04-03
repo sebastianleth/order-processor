@@ -4,6 +4,7 @@ using NodaTime;
 using OrderProcessor.Commands;
 using OrderProcessor.Domain;
 using OrderProcessor.Messaging;
+using OrderProcessor.Persistence;
 using Shouldly;
 using Xunit;
 
