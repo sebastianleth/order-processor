@@ -8,34 +8,34 @@ using Xunit;
 
 namespace OrderProcessor.Messaging
 {
-    public class ClientTests
+    public class InMemoryQueueClientTests
     {
-        readonly IClient _sut = new InMemQueueClient();
-        readonly ImmutableArray<EnqueuedMessage> _messages;
+        readonly IClient _sut = new InMemoryQueueClient();
+        readonly ImmutableArray<EnqueuedMessage> _expectedMessages;
 
-        public ClientTests()
+        public InMemoryQueueClientTests()
         {
-            _messages = EnqueueMessages().Result;
+            _expectedMessages = EnqueueMessages().Result;
         }
 
         [Fact]
         public async Task GivenEnqueuedMessages_WhenDequeuingAll_ThenOrderingAndIdsAsExpected()
         {
-            var actuals = new List<Message>();
+            var actualMessages = new List<Message>();
 
             while(await _sut.TryDequeue(out EnqueuedMessage? outMessage))
             {
-                actuals.Add(outMessage!);
+                actualMessages.Add(outMessage!);
             }
 
-            actuals
-                .ShouldBe(_messages);
+            actualMessages
+                .ShouldBe(_expectedMessages);
         }
 
         [Fact]
         public async Task GivenEnqueuedMessages_WhenDequeueTypeNotEnqueued_ThenTryFail()
         {
-            (await _sut.TryDequeue(out NotEnqueuedMessage? outMessage))
+            (await _sut.TryDequeue(out NotEnqueuedMessage? _))
                 .ShouldBeFalse();
         }
 
@@ -59,5 +59,8 @@ namespace OrderProcessor.Messaging
 
             return orderedMessages;
         }
+        public record EnqueuedMessage(MessageId Id, int Order) : Message(Id);
+
+        public record NotEnqueuedMessage(MessageId Id) : Message(Id);
     }
 }

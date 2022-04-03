@@ -1,6 +1,6 @@
 ﻿namespace OrderProcessor.Messaging
 {
-    class InMemQueueClient : IClient
+    class InMemoryQueueClient : IClient
     {
         readonly System.Collections.Concurrent.ConcurrentQueue<Message> _queue = new();
 
@@ -8,11 +8,10 @@
         {
             var found = _queue.TryPeek(out var dequeuedMessage);
 
-            if (found && dequeuedMessage is T)
+            if (found && dequeuedMessage is T result)
             {
-                message = (T) dequeuedMessage;
-                _queue.TryDequeue(out dequeuedMessage);
-
+                message = result;
+                _queue.TryDequeue(out _);
                 return Task.FromResult(true);
             }
 
