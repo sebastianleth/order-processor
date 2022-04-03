@@ -42,6 +42,6 @@ namespace OrderProcessor.Domain
             return new Order(orderId, Now, total); ;
         }
 
-        Instant Now => NodaTime.SystemClock.Instance.GetCurrentInstant();
+        static Instant Now => SystemClock.Instance.GetCurrentInstant();
     }
 }

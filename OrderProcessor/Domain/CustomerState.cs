@@ -6,6 +6,6 @@ public record CustomerState : Aggregates.AggregateState
 {
     public CustomerId Id { get; init; }
     public string Email { get; init; }
-    public CustomerLevel CustomerLevel { get; init; }
+    public CustomerLevel CustomerLevel { get; init; } = new RegularLevel();
     public ImmutableArray<Order> Orders { get; init; } = ImmutableArray<Order>.Empty;
 }
