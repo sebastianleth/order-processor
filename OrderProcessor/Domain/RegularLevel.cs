@@ -1,7 +1,6 @@
 ﻿namespace OrderProcessor.Domain;
 
-class RegularLevel : CustomerLevel
+class RegularLevel : ICustomerLevel
 {
-    public override string Name => "Regular";
-    public override decimal Discount => 0;
+    public decimal Discount => 0;
 }

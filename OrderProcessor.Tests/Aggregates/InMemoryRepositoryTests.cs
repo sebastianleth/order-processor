@@ -16,7 +16,7 @@ namespace OrderProcessor.Aggregates
         [Fact]
         public async Task GivenNotAggregate_WhenLoad_ThenFail()
         {
-            var missingAggregateId = new CustomerId(Guid.NewGuid());
+            var missingAggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
 
             var exception = await Should.ThrowAsync<DomainException>(async() => await _sut.Load<CustomerId, Customer, CustomerState>(missingAggregateId, Customer.Create));
 
@@ -27,7 +27,7 @@ namespace OrderProcessor.Aggregates
         [Fact]
         public async Task GivenExistingAggregate_WhenLoad_ThenAggregateLoaded()
         {
-            var aggregateId = new CustomerId(Guid.NewGuid());
+            var aggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
             var expected = Customer.Create(aggregateId, new CustomerState());
             await _sut.Save<CustomerId, Customer, CustomerState>(expected);
 
@@ -43,21 +43,18 @@ namespace OrderProcessor.Aggregates
         [Fact]
         public async Task GivenExistingChangedAggregate_WhenSaveUnchangedSecondInstanceOfSameAggregate_ThenFailByOptimisticConcurrency()
         {
-            var aggregateId = new CustomerId(Guid.NewGuid());
+            var aggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
             var time = Instant.MaxValue;
-            var expected = Customer.Create(aggregateId, new CustomerState());
-            await _sut.Save<CustomerId, Customer, CustomerState>(expected);
+            var aggregate = Customer.Create(aggregateId, new CustomerState());
+            await _sut.Save<CustomerId, Customer, CustomerState>(aggregate);
 
             var firstAggregateInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
             var secondAggregateInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
 
             firstAggregateInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
-            firstAggregateInstance.Handle(new PlaceOrder(MessageId.New, time, 10));
             await _sut.Save<CustomerId, Customer, CustomerState>(firstAggregateInstance);
 
-            var aaaa = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Create);
-
-            secondAggregateInstance.Handle(new CreateCustomer(MessageId.New, time, "second@gmail.com"));
+            secondAggregateInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
             var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Save<CustomerId, Customer, CustomerState>(secondAggregateInstance));
 
             exception.Message

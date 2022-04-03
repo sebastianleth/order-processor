@@ -46,7 +46,7 @@ namespace OrderProcessor.Aggregates
             _aggregates[aggregate.Id.Value] = new AggregateData(aggregate.State!, aggregate.Version);
         }
 
-        bool AggregateChanged(AggregateId aggregateId, int newVersion) => _aggregates[aggregateId.Value].Version > newVersion;
+        bool AggregateChanged(AggregateId aggregateId, int newVersion) => _aggregates[aggregateId.Value].Version >= newVersion;
 
         bool AggregateExists(AggregateId aggregateId)  => _aggregates.ContainsKey(aggregateId.Value);
 

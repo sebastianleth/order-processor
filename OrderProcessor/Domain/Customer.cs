@@ -24,7 +24,7 @@ namespace OrderProcessor.Domain
         {
             EnsureExists();
 
-            var customerLevel = CustomerLevel.Determine(State, Now);
+            var customerLevel = CustomerLevelCalculator.Determine(State, Now);
             var order = CreateOrder(command, customerLevel);
 
             ApplyState(State with
@@ -35,7 +35,7 @@ namespace OrderProcessor.Domain
             });
         }
 
-        Order CreateOrder(Commands.PlaceOrder command, CustomerLevel customerLevel)
+        Order CreateOrder(Commands.PlaceOrder command, ICustomerLevel customerLevel)
         {
             var orderId = new OrderId(command.Id.Value);
             var total = command.Total * ((100 - customerLevel.Discount) / 100);
@@ -43,7 +43,7 @@ namespace OrderProcessor.Domain
             return new Order(orderId, Now, total);
         }
 
-        bool CustomerLevelChanged(CustomerLevel customerLevel) => customerLevel.GetType() == State.CustomerLevel.GetType();
+        bool CustomerLevelChanged(ICustomerLevel customerLevel) => customerLevel.GetType() == State.CustomerLevel.GetType();
 
         static Instant Now => SystemClock.Instance.GetCurrentInstant();
     }

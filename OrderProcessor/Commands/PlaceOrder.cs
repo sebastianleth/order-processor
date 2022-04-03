@@ -7,6 +7,7 @@ namespace OrderProcessor.Commands
     public record PlaceOrder(
         Messaging.MessageId Id,
         Instant Time,
-        int Total
+        decimal Total,
+        string CustomerEmail
     ) : Messaging.Message(Id);
 }

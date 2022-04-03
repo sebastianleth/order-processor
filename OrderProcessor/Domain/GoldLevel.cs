@@ -1,7 +1,6 @@
 ﻿namespace OrderProcessor.Domain;
 
-class GoldLevel : CustomerLevel
+class GoldLevel : ICustomerLevel
 {
-    public override string Name => "Gold";
-    public override decimal Discount => 15;
+    public decimal Discount => 15;
 }

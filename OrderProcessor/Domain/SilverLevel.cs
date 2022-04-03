@@ -1,7 +1,6 @@
 ﻿namespace OrderProcessor.Domain;
 
-class SilverLevel : CustomerLevel
+class SilverLevel : ICustomerLevel
 {
-    public override string Name => "Silver";
-    public override decimal Discount => 10;
+    public decimal Discount => 10;
 }

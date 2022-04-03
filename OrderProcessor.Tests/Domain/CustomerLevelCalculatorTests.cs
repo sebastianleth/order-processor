@@ -5,14 +5,14 @@ using Xunit;
 
 namespace OrderProcessor.Domain
 {
-    public class CustomerLevelDetermineTests
+    public class CustomerLevelCalculatorTests
     {
         readonly Instant _now = SystemClock.Instance.GetCurrentInstant();
 
         [Fact]
         public void GivenNewCustomer_WhenDetermineLevel_ThenRegular()
         {
-            CustomerLevel.Determine(new CustomerState(), _now)
+            CustomerLevelCalculator.Determine(new CustomerState(), _now)
                 .ShouldBeOfType<RegularLevel>();
         }
 
@@ -26,7 +26,7 @@ namespace OrderProcessor.Domain
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 400))
             };
 
-            CustomerLevel.Determine(customerWithOrders, _now)
+            CustomerLevelCalculator.Determine(customerWithOrders, _now)
                 .ShouldBeOfType<RegularLevel>();
         }
 
@@ -41,7 +41,7 @@ namespace OrderProcessor.Domain
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 200))
             };
 
-            CustomerLevel.Determine(customerWithOrders, _now)
+            CustomerLevelCalculator.Determine(customerWithOrders, _now)
                 .ShouldBeOfType<SilverLevel>();
         }
 
@@ -56,7 +56,7 @@ namespace OrderProcessor.Domain
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700))
             };
 
-            CustomerLevel.Determine(customerWithOrders, _now)
+            CustomerLevelCalculator.Determine(customerWithOrders, _now)
                 .ShouldBeOfType<GoldLevel>();
         }
 
@@ -71,7 +71,7 @@ namespace OrderProcessor.Domain
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700))
             };
 
-            CustomerLevel.Determine(customerWithOrders, _now)
+            CustomerLevelCalculator.Determine(customerWithOrders, _now)
                 .ShouldBeOfType<SilverLevel>();
         }
     }
