@@ -30,7 +30,7 @@ public abstract class Aggregate<TState> where TState : new()
         }
     }
 
-    public void ApplyState(TState state)
+    protected void ApplyState(TState state)
     {
         State = state;
         Version++;

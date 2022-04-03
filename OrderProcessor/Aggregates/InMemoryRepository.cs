@@ -4,7 +4,7 @@ namespace OrderProcessor.Aggregates
 {
     class InMemoryRepository : IAggregateRepository
     {
-        readonly ConcurrentDictionary<AggregateId, AggregateData> _aggregates = new();
+        readonly ConcurrentDictionary<Guid, AggregateData> _aggregates = new();
 
         public Task Save<T, TState>(T aggregate) where T : Aggregate<TState> where TState : new()
         {
@@ -26,7 +26,7 @@ namespace OrderProcessor.Aggregates
                 throw new DomainException($"{typeof(T).Name} {aggregateId} does not exist");
             }
 
-            var aggregateData = _aggregates[aggregateId];
+            var aggregateData = _aggregates[aggregateId.Value];
             var state = (TState) aggregateData.State;
             var aggregate = aggregateFactory(aggregateId, state);
 
@@ -35,12 +35,12 @@ namespace OrderProcessor.Aggregates
 
         void WriteAggregateData<T, TState>(T aggregate) where T : Aggregate<TState> where TState : new()
         {
-            _aggregates[aggregate.Id] = new AggregateData(aggregate.State!, aggregate.Version);
+            _aggregates[aggregate.Id.Value] = new AggregateData(aggregate.State!, aggregate.Version);
         }
 
-        bool AggregateChanged(AggregateId aggregateId, int newVersion) => _aggregates[aggregateId].Version > newVersion;
+        bool AggregateChanged(AggregateId aggregateId, int newVersion) => _aggregates[aggregateId.Value].Version > newVersion;
 
-        bool AggregateExists(AggregateId aggregateId)  => _aggregates.ContainsKey(aggregateId);
+        bool AggregateExists(AggregateId aggregateId)  => _aggregates.ContainsKey(aggregateId.Value);
 
         record AggregateData(object State, int Version);
     }
