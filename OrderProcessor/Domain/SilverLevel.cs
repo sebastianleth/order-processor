@@ -1,17 +1,16 @@
-﻿using System.Collections.Immutable;
-using NodaTime;
+﻿using NodaTime;
 
 namespace OrderProcessor.Domain;
 
-class SilverLevel : ILevel
+record SilverLevel : ILevel
 {
     public string Name => "Silver";
     public decimal DiscountPercentage => 10;
-    decimal OrderSumForLevelUp => 600;
+    static decimal OrderSumForLevelUp => 600;
 
-    public LevelResult DetermineLevelUp(CustomerState state, Instant now)
+    public LevelResult DetermineLevelUp(CustomerState state, Order placedOrder, Instant now)
     {
-        var orderTotals = OrderTotals.Build(state, now);
+        var orderTotals = OrderTotals.Get(state, placedOrder.Total, now);
         var enoughTotalSum = orderTotals.OrderSumLastThirtyDays > OrderSumForLevelUp;
         var lastLevelUpMoreThanAWeekAgo = state.LastLevelUp < now.Minus(Duration.FromDays(7));
 

@@ -8,11 +8,18 @@ public record Order(
     decimal Total,
     decimal DiscountGiven)
 {
-    public static Order Create(MessageId messageId, decimal total, ILevel level, Instant now)
-    {
-        var discountGiven = (level.DiscountPercentage / 100) * total;
-        var totalAfterDiscount = total - discountGiven;
+    public static Order Create(OrderId orderId, decimal total, Instant now) =>
+        new (orderId, now, total, DiscountGiven: 0);
 
-        return new Order(new OrderId(messageId.Value), now, totalAfterDiscount, discountGiven);
+    public Order ApplyDiscount(ILevel level)
+    {
+        var discountGiven = (level.DiscountPercentage / 100) * Total;
+        var totalAfterDiscount = Total - discountGiven;
+
+        return this with
+        {
+            Total = totalAfterDiscount,
+            DiscountGiven = discountGiven
+        };
     }
 }

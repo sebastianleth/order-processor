@@ -16,7 +16,7 @@ public record Parameters(
         customer.State.Email!,
         orderPlaced,
         customer.State.Level,
-        customer.State.Orders.Length,
+        customer.State.Orders.Count,
         customer.State.Orders.Sum(o => o.Total),
         customer.State.Orders.Min(o => o.Time),
         customer.State.LastLevelUp);

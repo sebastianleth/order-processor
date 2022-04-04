@@ -9,17 +9,17 @@ namespace OrderProcessor.Email
 {
     public class ComposerTests
     {
-        IComposer _sut = new Composer();
+        readonly IComposer _sut = new Composer();
 
         [Fact]
-        public void GivenParameters_WhenDo_ThenVeryNice()
+        public void GivenParameters_WhenCompose_ThenVeryNice()
         {
             var now = SystemClock.Instance.GetCurrentInstant();
             var yesterday = now.Minus(Duration.FromDays(1));
             var level = new SilverLevel();
             var parameters = new Parameters(
                 "email@gmail.com",
-                Order.Create(MessageId.New, total: 100, level, now),
+                Order.Create(OrderId.New, total: 100, now).ApplyDiscount(level),
                 OrderCount: 1,
                 OrdersSum: 90,
                 Level: level,
