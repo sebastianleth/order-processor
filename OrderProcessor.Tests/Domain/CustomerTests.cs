@@ -14,7 +14,7 @@ namespace OrderProcessor.Domain
         {
             var time = Instant.MaxValue;
             var aggregateId = new CustomerId(Guid.NewGuid());
-            var customer = Customer.Create(aggregateId, new CustomerState());
+            var customer = Customer.Initialize(aggregateId, new CustomerState());
 
             customer.Handle(new CreateCustomer(MessageId.New, time, "sebastian@koderi.dk"));
 

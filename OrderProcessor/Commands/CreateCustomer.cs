@@ -6,5 +6,5 @@ namespace OrderProcessor.Commands
         Messaging.MessageId Id,
         Instant Time,
         string Email
-    ) : Messaging.Message(Id);
+    ) : Messaging.Message(Id), ICommand;
 }

@@ -6,7 +6,9 @@ namespace OrderProcessor.Domain
 {
     public class Customer : Aggregate<CustomerState>
     {
-        public static Customer Create(CustomerId id, CustomerState state) => new(id, state);
+        public static Customer New(CustomerId id) => new(id, new CustomerState());
+
+        public static Customer Initialize(CustomerId id, CustomerState state) => new(id, state);
 
         private Customer(CustomerId id, CustomerState state) : base(id, state) { }
 

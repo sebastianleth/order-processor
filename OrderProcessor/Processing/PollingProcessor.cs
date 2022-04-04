@@ -1,4 +1,6 @@
 ﻿
+using Serilog;
+
 namespace OrderProcessor.Processing;
 
 class PollingProcessor : IProcessor
@@ -6,16 +8,20 @@ class PollingProcessor : IProcessor
     readonly Messaging.IClient _messagingClient;
     readonly Handlers.ICommandHandler<Commands.CreateCustomer> _createCustomerHandler;
     readonly Handlers.ICommandHandler<Commands.PlaceOrder> _placeOrderHandler;
+    readonly ILogger _logger;
     readonly TimeSpan _pollingInterval = TimeSpan.FromMilliseconds(100);
 
     public PollingProcessor(
         Messaging.IClient messagingClient,
         Handlers.ICommandHandler<Commands.CreateCustomer> createCustomerHandler,
-        Handlers.ICommandHandler<Commands.PlaceOrder> placeOrderHandler)
+        Handlers.ICommandHandler<Commands.PlaceOrder> placeOrderHandler, 
+        Serilog.ILogger logger
+        )
     {
         _messagingClient = messagingClient;
         _createCustomerHandler = createCustomerHandler;
         _placeOrderHandler = placeOrderHandler;
+        _logger = logger;
     }
 
     public async Task Process(CancellationToken cancellationToken)
@@ -26,8 +32,15 @@ class PollingProcessor : IProcessor
             // ... and an acknowledged queue, so that the message is retried in case of failure
             // ... and a proper listening queue, instead of this polling
 
-            await HandleCreateCustomer();
-            await HandlePlaceOrder();
+            try
+            {
+                await HandleCreateCustomer();
+                await HandlePlaceOrder();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Unhandled exception in PollingProcessor");
+            }
 
             await Task.Delay(_pollingInterval, cancellationToken);
 

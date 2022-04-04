@@ -8,5 +8,5 @@ namespace OrderProcessor.Commands
         Instant Time,
         decimal Total,
         string CustomerEmail
-    ) : Messaging.Message(Id);
+    ) : Messaging.Message(Id), ICommand;
 }

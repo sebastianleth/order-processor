@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace OrderProcessor;
 
@@ -6,11 +7,21 @@ public static class ServiceRegistrations
 {
     public static void AddOrderProcessorServices(this IServiceCollection services)
     {
+        services.AddLogging();
         services.AddProcessing();
         services.AddHandlers();
         services.AddEmail();
         services.AddPersistence();
         services.AddMessaging();
+    }
+
+    static void AddLogging(this IServiceCollection services)
+    {
+        var logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateLogger();
+
+        services.AddSingleton<ILogger>(logger);
     }
 
     static void AddProcessing(this IServiceCollection services)
@@ -20,9 +31,15 @@ public static class ServiceRegistrations
 
     static void AddHandlers(this IServiceCollection services)
     {
-        services.AddTransient<Handlers.ICommandHandler<Commands.CreateCustomer>, Handlers.CommandHandler>();
-        services.AddTransient<Handlers.ICommandHandler<Commands.PlaceOrder>, Handlers.CommandHandler>();
+        services.AddTransient<Handlers.ICommandHandler<Commands.CreateCustomer>, Handlers.CreateCustomerHandler>();
+        services.Decorate<Handlers.ICommandHandler<Commands.CreateCustomer>>((inner, provider) => 
+            new Handlers.LoggingHandlerDecorator<Commands.CreateCustomer>(inner, provider.GetRequiredService<ILogger>()));
+
+        services.AddTransient<Handlers.ICommandHandler<Commands.PlaceOrder>, Handlers.PlaceOrderHandler>();
+        services.Decorate<Handlers.ICommandHandler<Commands.PlaceOrder>>((inner, provider) =>
+            new Handlers.LoggingHandlerDecorator<Commands.PlaceOrder>(inner, provider.GetRequiredService<ILogger>()));
     }
+
 
     static void AddEmail(this IServiceCollection services)
     {

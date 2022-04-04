@@ -9,9 +9,11 @@ public class ProcessingHostedService : IHostedService
         _processor = processor;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        await _processor.Process(cancellationToken);
+        _processor.Process(cancellationToken);
+
+        return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

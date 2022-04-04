@@ -1,6 +1,7 @@
+using OrderProcessor.Messaging;
 using OrderProcessor.Persistence;
 
-namespace OrderProcessor.Domain;
+namespace OrderProcessor;
 
 public record CustomerId(Guid Value) : AggregateId(Value)
 {

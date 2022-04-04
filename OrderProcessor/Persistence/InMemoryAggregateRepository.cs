@@ -11,7 +11,11 @@ namespace OrderProcessor.Persistence
             where T : Aggregate<TState> 
             where TState : AggregateState, new()
         {
-            // Optimistic concurrency
+            if (AggregateExists(aggregate.Id) && aggregate.Version <= 0)
+            {
+                throw new DomainException($"{aggregate.GetType().Name} {aggregate.Id} already exists, and cannot be created anew");
+            }
+
             if (AggregateExists(aggregate.Id) && AggregateChanged(aggregate.Id, aggregate.Version))
             {
                 throw new DomainException($"{aggregate.GetType().Name} {aggregate.Id} was changed by another actor");

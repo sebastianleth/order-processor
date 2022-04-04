@@ -1,4 +1,4 @@
-namespace OrderProcessor.Domain;
+namespace OrderProcessor;
 
 public record OrderId(Guid Value) : EntityId(Value)
 {

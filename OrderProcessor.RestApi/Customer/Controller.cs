@@ -3,20 +3,25 @@ using Microsoft.AspNetCore.Mvc;
 namespace OrderProcessor.Customer
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("customer")]
     public class Controller : ControllerBase
     {
-        private readonly ILogger<Controller> _logger;
+        readonly Messaging.IClient _messagingClient;
 
-        public Controller(ILogger<Controller> logger)
+        public Controller(Messaging.IClient messagingClient)
         {
-            _logger = logger;
+            _messagingClient = messagingClient;
         }
 
-        [HttpPost(Name = "GetWeatherForecast")]
-        public IEnumerable<int> Get()
-        {
-            return null;
-        }
+        [HttpPost]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public Task CreateCustomer(Commands.CreateCustomer command) => _messagingClient.Enqueue(command);
+
+
+        [HttpPost("order")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public Task PlaceOrder(Commands.PlaceOrder command) => _messagingClient.Enqueue(command);
     }
 }

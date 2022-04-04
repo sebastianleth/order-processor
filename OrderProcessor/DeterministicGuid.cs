@@ -51,7 +51,7 @@ public static class DeterministicGuid
 		{
 			algorithm.TransformBlock(namespaceBytes, 0, namespaceBytes.Length, null, 0);
 			algorithm.TransformFinalBlock(nameBytes, 0, nameBytes.Length);
-			hash = algorithm.Hash;
+			hash = algorithm.Hash!;
 		}
 
 		// most bytes from the hash are copied straight to the bytes of the new GUID (steps 5-7, 9, 11-12)
