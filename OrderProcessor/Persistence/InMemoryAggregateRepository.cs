@@ -11,7 +11,7 @@ namespace OrderProcessor.Persistence
             where T : Aggregate<TState> 
             where TState : AggregateState, new()
         {
-            if (AggregateExists(aggregate.Id) && aggregate.State.Version <= 0)
+            if (AggregateExists(aggregate.Id) && aggregate.State.Version == -1)
             {
                 throw new DomainException($"{aggregate.GetType().Name} {aggregate.Id} already exists, and cannot be created anew");
             }

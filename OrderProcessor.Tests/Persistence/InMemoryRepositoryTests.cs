@@ -15,7 +15,7 @@ namespace OrderProcessor.Persistence
         [Fact]
         public async Task GivenNotExistingAggregate_WhenLoad_ThenFail()
         {
-            var missingAggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
+            var missingAggregateId = CustomerId.FromEmail("email@gmail.com");
 
             var exception = await Should.ThrowAsync<DomainException>(async() => await _sut.Load<CustomerId, Customer, CustomerState>(missingAggregateId, Customer.Initialize));
 
@@ -26,7 +26,7 @@ namespace OrderProcessor.Persistence
         [Fact]
         public async Task GivenExistingAggregate_WhenLoad_ThenAggregateLoaded()
         {
-            var aggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
+            var aggregateId = CustomerId.FromEmail("email@gmail.com");
             var expected = Customer.Initialize(aggregateId, new CustomerState());
             await _sut.Save<CustomerId, Customer, CustomerState>(expected);
 
@@ -42,7 +42,7 @@ namespace OrderProcessor.Persistence
         [Fact]
         public async Task GivenNotExistingAggregate_WhenSaveNew_ThenOk()
         {
-            var newAggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
+            var newAggregateId = CustomerId.FromEmail("email@gmail.com");
             var customer = Customer.New(newAggregateId);
 
             await _sut.Save<CustomerId, Customer, CustomerState>(customer);
@@ -51,7 +51,7 @@ namespace OrderProcessor.Persistence
         [Fact]
         public async Task GivenExistingAggregate_WhenSaveNew_ThenFailByAlreadyExisting()
         {
-            var newAggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
+            var newAggregateId = CustomerId.FromEmail("email@gmail.com");
             var customer = Customer.New(newAggregateId);
 
             await _sut.Save<CustomerId, Customer, CustomerState>(customer);
@@ -66,7 +66,7 @@ namespace OrderProcessor.Persistence
         [Fact]
         public async Task GivenExistingChangedAggregate_WhenSaveUnchangedSecondInstanceOfSameAggregate_ThenFailByOptimisticConcurrency()
         {
-            var aggregateId = CustomerId.FromEmail("sebastian@koderi.dk");
+            var aggregateId = CustomerId.FromEmail("email@gmail.com");
             var time = Instant.MaxValue;
             var aggregate = Customer.Initialize(aggregateId, new CustomerState());
             await _sut.Save<CustomerId, Customer, CustomerState>(aggregate);
