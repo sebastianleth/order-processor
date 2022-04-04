@@ -16,7 +16,7 @@ namespace OrderProcessor.Domain
             var aggregateId = new CustomerId(Guid.NewGuid());
             var customer = new Customer(aggregateId, new CustomerState(), clock);
 
-            customer.Handle(new CreateCustomer(MessageId.New, "email@gmail.com"));
+            customer.Create(new CreateCustomer(MessageId.New, "email@gmail.com"));
 
             customer.State.Level
                 .ShouldBeAssignableTo<RegularLevel>();

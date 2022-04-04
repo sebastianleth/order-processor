@@ -4,16 +4,16 @@ using OrderProcessor.Domain;
 namespace OrderProcessor.Email;
 
 public record Parameters(
-    string? Email,
-    Domain.Order OrderPlaced,
-    Domain.ILevel CustomerLevel,
+    string Email,
+    Order OrderPlaced,
+    ILevel Level,
     int OrderCount,
     decimal OrdersSum,
     Instant EarliestOrderTime,
-    Instant TimeOfLastUpgrade)
+    Instant LastLevelUpTime)
 {
     public static Parameters From(Customer customer, Order orderPlaced) => new(
-        customer.State.Email,
+        customer.State.Email!,
         orderPlaced,
         customer.State.Level,
         customer.State.Orders.Length,

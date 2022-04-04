@@ -76,10 +76,10 @@ namespace OrderProcessor.Persistence
             var firstInstance = await _sut.Load(aggregateId);
             var secondInstance = await _sut.Load(aggregateId);
 
-            firstInstance.Handle(new CreateCustomer(MessageId.New, "email@gmail.com"));
+            firstInstance.Create(new CreateCustomer(MessageId.New, "email@gmail.com"));
             await _sut.Save(firstInstance);
 
-            secondInstance.Handle(new CreateCustomer(MessageId.New, "email@gmail.com"));
+            secondInstance.Create(new CreateCustomer(MessageId.New, "email@gmail.com"));
             var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Save(secondInstance));
 
             exception.Message
