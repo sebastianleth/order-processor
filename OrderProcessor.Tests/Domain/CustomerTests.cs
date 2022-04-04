@@ -12,8 +12,9 @@ namespace OrderProcessor.Domain
         [Fact]
         public void GivenCustomer_WhenCreate_ThenStatusRegular()
         {
+            var clock = SystemClock.Instance;
             var aggregateId = new CustomerId(Guid.NewGuid());
-            var customer = Customer.Initialize(aggregateId, new CustomerState());
+            var customer = new Customer(aggregateId, new CustomerState(), new CustomerLevelCalculator(clock), clock);
 
             customer.Handle(new CreateCustomer(MessageId.New, "email@gmail.com"));
 

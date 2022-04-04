@@ -6,11 +6,14 @@ namespace OrderProcessor.Domain
 {
     public class Customer : Aggregate<CustomerState>
     {
-        public static Customer New(CustomerId id) => new(id, new CustomerState());
+        readonly ICustomerLevelCalculator _customerLevelCalculator;
+        readonly IClock _clock;
 
-        public static Customer Initialize(CustomerId id, CustomerState state) => new(id, state);
-
-        private Customer(CustomerId id, CustomerState state) : base(id, state) { }
+        public Customer(CustomerId id, CustomerState state, ICustomerLevelCalculator customerLevelCalculator, IClock clock) : base(id, state)
+        {
+            _customerLevelCalculator = customerLevelCalculator;
+            _clock = clock;
+        }
 
         public Customer Handle(Commands.CreateCustomer command)
         {
@@ -18,7 +21,7 @@ namespace OrderProcessor.Domain
 
             ApplyState(State with
             {
-                CreatedTime = Now,
+                CreatedTime = _clock.GetCurrentInstant(),
                 Email = command.Email,
                 CustomerLevel = new RegularLevel()
             });
@@ -30,31 +33,29 @@ namespace OrderProcessor.Domain
         {
             EnsureExists();
 
-            var customerLevel = CustomerLevelCalculator.Determine(State, Now);
-            var order = CreateOrder(command, customerLevel);
+            var customerLevelResult = _customerLevelCalculator.Determine(State);
+            var order = CreateOrder(command, customerLevelResult.CustomerLevel);
 
             ApplyState(State with
             {
                 Orders = State.Orders.Append(order).ToImmutableArray(),
-                CustomerLevel = customerLevel,
-                CustomerLevelChangeTime = CustomerLevelChanged(customerLevel) ? Now : State.CustomerLevelChangeTime
+                CustomerLevel = customerLevelResult.CustomerLevel,
+                CustomerLevelChangeTime = customerLevelResult.LevelBumped ? _clock.GetCurrentInstant() : State.CustomerLevelChangeTime
             });
 
             return order;
         }
 
-        static Order CreateOrder(Commands.PlaceOrder command, ICustomerLevel customerLevel)
+        Order CreateOrder(Commands.PlaceOrder command, ICustomerLevel customerLevel)
         {
             var orderId = new OrderId(command.Id.Value);
 
             var discountGiven = (customerLevel.DiscountPercentage / 100) * command.Total;
             var total = command.Total - discountGiven;
 
-            return new Order(orderId, Now, total, discountGiven);
+            return new Order(orderId, _clock.GetCurrentInstant(), total, discountGiven);
         }
 
         bool CustomerLevelChanged(ICustomerLevel customerLevel) => customerLevel.GetType() != State.CustomerLevel.GetType();
-
-        static Instant Now => SystemClock.Instance.GetCurrentInstant();
     }
 }

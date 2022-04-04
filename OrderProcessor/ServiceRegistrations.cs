@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
+using OrderProcessor.Domain;
 using Serilog;
 
 namespace OrderProcessor;
@@ -8,6 +10,8 @@ public static class ServiceRegistrations
     public static void AddOrderProcessorServices(this IServiceCollection services)
     {
         services.AddLogging();
+        services.AddTime();
+        services.AddDomain();
         services.AddProcessing();
         services.AddHandlers();
         services.AddEmail();
@@ -22,6 +26,16 @@ public static class ServiceRegistrations
             .CreateLogger();
 
         services.AddSingleton<ILogger>(logger);
+    }
+
+    static void AddTime(this IServiceCollection services)
+    {
+        services.AddSingleton<IClock>(SystemClock.Instance);
+    }
+
+    static void AddDomain(this IServiceCollection services)
+    {
+        services.AddSingleton<ICustomerLevelCalculator, CustomerLevelCalculator>();
     }
 
     static void AddProcessing(this IServiceCollection services)
@@ -47,7 +61,12 @@ public static class ServiceRegistrations
 
     static void AddPersistence(this IServiceCollection services)
     {
-        services.AddSingleton<Persistence.IAggregateRepository, Persistence.InMemoryAggregateRepository>();
+        services.AddSingleton<Persistence.IAggregateRepository<CustomerId, Customer>, Persistence.InMemoryAggregateRepository<CustomerId, Customer, CustomerState>>();
+        services.AddSingleton<Func<CustomerId, CustomerState, Customer>>(provider => (id, state) => new Customer(
+            id,
+            state,
+            provider.GetService<ICustomerLevelCalculator>()!,
+            provider.GetService<IClock>()!));
     }
 
     static void AddMessaging(this IServiceCollection services)

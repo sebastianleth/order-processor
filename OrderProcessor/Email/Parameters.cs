@@ -3,7 +3,7 @@ using OrderProcessor.Domain;
 
 namespace OrderProcessor.Email;
 
-public record EmailParameters(
+public record Parameters(
     string? Email,
     Domain.Order OrderPlaced,
     Domain.ICustomerLevel CustomerLevel,
@@ -12,7 +12,7 @@ public record EmailParameters(
     Instant EarliestOrderTime,
     Instant TimeOfLastUpgrade)
 {
-    public static EmailParameters From(Customer customer, Order orderPlaced) => new(
+    public static Parameters From(Customer customer, Order orderPlaced) => new(
         customer.State.Email,
         orderPlaced,
         customer.State.CustomerLevel,

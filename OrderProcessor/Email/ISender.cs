@@ -4,5 +4,5 @@ namespace OrderProcessor.Email;
 
 public interface ISender
 {
-    Task SendEmail(EmailParameters parameters);
+    Task SendEmail(Parameters parameters);
 }

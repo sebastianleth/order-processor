@@ -12,7 +12,7 @@ class Sender : ISender
         _logger = logger;
     }
 
-    public Task SendEmail(EmailParameters parameters)
+    public Task SendEmail(Parameters parameters)
     {
         var body = @"
 

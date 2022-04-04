@@ -3,15 +3,23 @@ using NodaTime;
 
 namespace OrderProcessor.Domain;
 
-public static class CustomerLevelCalculator
+public class CustomerLevelCalculator : ICustomerLevelCalculator
 {
-    public static ICustomerLevel Determine(CustomerState customerState, Instant now)
+    private readonly IClock _clock;
+
+    public CustomerLevelCalculator(IClock clock)
+    {
+        _clock = clock;
+    }
+
+    public CustomerLevelResult Determine(CustomerState customerState)
     {
         if (customerState.CustomerLevel is GoldLevel)
         {
-            return customerState.CustomerLevel;
+            return new CustomerLevelResult(customerState.CustomerLevel, LevelBumped: false);
         }
 
+        var now = _clock.GetCurrentInstant();
         var thirtyDaysAgo = now.Minus(Duration.FromDays(30));
         var ordersLastThirtyDays = customerState.Orders.Where(order => order.Time > thirtyDaysAgo).ToImmutableArray();
         var orderSum = ordersLastThirtyDays.Sum(order => order.Total);
@@ -20,10 +28,10 @@ public static class CustomerLevelCalculator
         {
             if (orderSum > 600 && customerState.CustomerLevelChangeTime < now.Minus(Duration.FromDays(7)))
             {
-                return new GoldLevel();
+                return new CustomerLevelResult(new GoldLevel(), LevelBumped: true);
             }
 
-            return customerState.CustomerLevel;
+            return new CustomerLevelResult(customerState.CustomerLevel, LevelBumped: false);
         }
 
         if (customerState.CustomerLevel is RegularLevel)
@@ -32,10 +40,10 @@ public static class CustomerLevelCalculator
 
             if (orderCount >= 2 && orderSum > 300)
             {
-                return new SilverLevel();
+                return new CustomerLevelResult(new SilverLevel(), LevelBumped: true);
             }
         }
 
-        return new RegularLevel();
+        return new CustomerLevelResult(customerState.CustomerLevel, LevelBumped: false);
     }
 }
