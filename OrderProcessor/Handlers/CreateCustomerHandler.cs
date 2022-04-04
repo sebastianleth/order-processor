@@ -18,6 +18,6 @@ public class CreateCustomerHandler : ICommandHandler<Commands.CreateCustomer>
 
         customer.Handle(command);
 
-        await _repository.Save<CustomerId, Customer, CustomerState>(customer);
+        await _repository.Insert<CustomerId, Customer, CustomerState>(customer);
     }
 }

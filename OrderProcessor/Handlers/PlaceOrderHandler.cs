@@ -26,6 +26,4 @@ public class PlaceOrderHandler : ICommandHandler<Commands.PlaceOrder>
         var parameters = EmailParameters.From(customer, orderPlaced);
         await _emailSender.SendEmail(parameters);
     }
-
-    
 }
