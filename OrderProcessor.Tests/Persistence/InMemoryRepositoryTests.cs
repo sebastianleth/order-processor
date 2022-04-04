@@ -10,42 +10,42 @@ namespace OrderProcessor.Persistence
 {
     public class InMemoryRepositoryTests
     {
-        readonly IAggregateRepository<CustomerId, Customer> _sut = new InMemoryAggregateRepository<CustomerId, Customer, CustomerState>(Factory);
-
-        static Customer Factory(CustomerId id, CustomerState state) => new(id, state, SystemClock.Instance);
+        const string CustomerEmail = "email@gmail.com";
+        readonly IAggregateRepository<CustomerId, Customer> _sut = new InMemoryAggregateRepository<CustomerId, Customer, CustomerState>(AggregateFactory);
+        static Customer AggregateFactory(CustomerId id, CustomerState state) => new(id, state, SystemClock.Instance);
 
 
         [Fact]
         public async Task GivenNotExistingAggregate_WhenLoad_ThenFail()
         {
-            var missingAggregateId = CustomerId.FromEmail("email@gmail.com");
+            var missingCustomerId = CustomerId.FromEmail(CustomerEmail);
 
-            var exception = await Should.ThrowAsync<DomainException>(async() => await _sut.Load(missingAggregateId));
+            var exception = await Should.ThrowAsync<DomainException>(async() => await _sut.Load(missingCustomerId));
 
             exception.Message
-                .ShouldBe($"Customer {missingAggregateId} does not exist");
+                .ShouldBe($"Customer {missingCustomerId} does not exist");
         }
 
         [Fact]
         public async Task GivenExistingAggregate_WhenLoad_ThenAggregateLoaded()
         {
-            var aggregateId = CustomerId.FromEmail("email@gmail.com");
-            var expected = await _sut.New(aggregateId);
-            await _sut.Insert(expected);
+            var customerId = CustomerId.FromEmail(CustomerEmail);
+            var customer = await _sut.New(customerId);
+            await _sut.Insert(customer);
 
-            var actual = await _sut.Load(aggregateId);
+            var actual = await _sut.Load(customerId);
 
             actual.Id
-                .ShouldBe(expected.Id);
+                .ShouldBe(customer.Id);
 
             actual.State
-                .ShouldBe(expected.State);
+                .ShouldBe(customer.State);
         }
 
         [Fact]
         public async Task GivenNotExistingAggregate_WhenInsertNew_ThenOk()
         {
-            var newAggregateId = CustomerId.FromEmail("email@gmail.com");
+            var newAggregateId = CustomerId.FromEmail(CustomerEmail);
             var customer = await _sut.New(newAggregateId);
 
             await _sut.Save(customer);
@@ -54,12 +54,12 @@ namespace OrderProcessor.Persistence
         [Fact]
         public async Task GivenExistingAggregate_WhenInsertNew_ThenFailByAlreadyExisting()
         {
-            var aggregateId = CustomerId.FromEmail("email@gmail.com");
-            var customer = await _sut.New(aggregateId);
+            var customerId = CustomerId.FromEmail(CustomerEmail);
+            var customer = await _sut.New(customerId);
 
             await _sut.Insert(customer);
 
-            customer = await _sut.New(aggregateId);
+            customer = await _sut.New(customerId);
             var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Insert(customer));
 
             exception.Message
@@ -69,17 +69,17 @@ namespace OrderProcessor.Persistence
         [Fact]
         public async Task GivenExistingChangedAggregate_WhenSaveUnchangedSecondInstanceOfSameAggregate_ThenFailByOptimisticConcurrency()
         {
-            var aggregateId = CustomerId.FromEmail("email@gmail.com");
-            var aggregate = await _sut.New(aggregateId);
-            await _sut.Save(aggregate);
+            var customerId = CustomerId.FromEmail(CustomerEmail);
+            var customer = await _sut.New(customerId);
+            await _sut.Save(customer);
 
-            var firstInstance = await _sut.Load(aggregateId);
-            var secondInstance = await _sut.Load(aggregateId);
+            var firstInstance = await _sut.Load(customerId);
+            var secondInstance = await _sut.Load(customerId);
 
-            firstInstance.Create(new CreateCustomer(MessageId.New, "email@gmail.com"));
+            firstInstance.Create(new CreateCustomer(MessageId.New, CustomerEmail));
             await _sut.Save(firstInstance);
 
-            secondInstance.Create(new CreateCustomer(MessageId.New, "email@gmail.com"));
+            secondInstance.Create(new CreateCustomer(MessageId.New, CustomerEmail));
             var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Save(secondInstance));
 
             exception.Message
