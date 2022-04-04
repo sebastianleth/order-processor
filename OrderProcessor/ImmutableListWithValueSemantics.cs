@@ -1,4 +1,7 @@
-﻿namespace System.Collections.Immutable
+﻿// Taken from https://gist.github.com/jhgbrt/4bf2cf7e5c077f7326c8b82160a9c59a
+// Enables us to compare records with collection properties
+
+namespace System.Collections.Immutable
 {
     public class ImmutableListWithValueSemantics<T> : IImmutableList<T>, IEquatable<IImmutableList<T>>
     {
