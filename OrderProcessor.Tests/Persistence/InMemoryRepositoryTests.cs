@@ -28,7 +28,7 @@ namespace OrderProcessor.Persistence
         {
             var aggregateId = CustomerId.FromEmail("email@gmail.com");
             var expected = Customer.Initialize(aggregateId, new CustomerState());
-            await _sut.Save<CustomerId, Customer, CustomerState>(expected);
+            await _sut.Insert<CustomerId, Customer, CustomerState>(expected);
 
             var actual = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Initialize);
 
@@ -40,7 +40,7 @@ namespace OrderProcessor.Persistence
         }
 
         [Fact]
-        public async Task GivenNotExistingAggregate_WhenSaveNew_ThenOk()
+        public async Task GivenNotExistingAggregate_WhenInsertNew_ThenOk()
         {
             var newAggregateId = CustomerId.FromEmail("email@gmail.com");
             var customer = Customer.New(newAggregateId);
@@ -49,15 +49,15 @@ namespace OrderProcessor.Persistence
         }
 
         [Fact]
-        public async Task GivenExistingAggregate_WhenSaveNew_ThenFailByAlreadyExisting()
+        public async Task GivenExistingAggregate_WhenInsertNew_ThenFailByAlreadyExisting()
         {
             var newAggregateId = CustomerId.FromEmail("email@gmail.com");
             var customer = Customer.New(newAggregateId);
 
-            await _sut.Save<CustomerId, Customer, CustomerState>(customer);
+            await _sut.Insert<CustomerId, Customer, CustomerState>(customer);
 
             customer = Customer.New(newAggregateId);
-            var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Save<CustomerId, Customer, CustomerState>(customer));
+            var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Insert<CustomerId, Customer, CustomerState>(customer));
 
             exception.Message
                 .ShouldBe($"Customer {customer.Id} already exists, and cannot be created anew");

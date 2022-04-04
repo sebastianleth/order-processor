@@ -6,16 +6,26 @@ namespace OrderProcessor.Persistence
     {
         readonly ConcurrentDictionary<Guid, object> _aggregates = new();
 
+        public Task Insert<TAggregateId, T, TState>(T aggregate)
+            where TAggregateId : AggregateId
+            where T : Aggregate<TState>
+            where TState : AggregateState, new()
+        {
+            if (AggregateExists(aggregate.Id))
+            {
+                throw new DomainException($"{aggregate.GetType().Name} {aggregate.Id} already exists, and cannot be created anew");
+            }
+
+            WriteAggregateData<T, TState>(aggregate);
+
+            return Task.CompletedTask;
+        }
+
         public Task Save<TAggregateId, T, TState>(T aggregate)
             where TAggregateId : AggregateId
             where T : Aggregate<TState> 
             where TState : AggregateState, new()
         {
-            if (AggregateExists(aggregate.Id) && aggregate.State.Version == -1)
-            {
-                throw new DomainException($"{aggregate.GetType().Name} {aggregate.Id} already exists, and cannot be created anew");
-            }
-
             if (AggregateExists(aggregate.Id) && AggregateChanged<TState>(aggregate.Id, aggregate.State.Version))
             {
                 throw new DomainException($"{aggregate.GetType().Name} {aggregate.Id} was changed by another actor");

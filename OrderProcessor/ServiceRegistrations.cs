@@ -40,7 +40,6 @@ public static class ServiceRegistrations
             new Handlers.LoggingHandlerDecorator<Commands.PlaceOrder>(inner, provider.GetRequiredService<ILogger>()));
     }
 
-
     static void AddEmail(this IServiceCollection services)
     {
         services.AddTransient<Email.ISender, Email.Sender>();

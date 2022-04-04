@@ -2,6 +2,11 @@
 
 public interface IAggregateRepository
 {
+    Task Insert<TAggregateId, T, TState>(T aggregate)
+        where TAggregateId : AggregateId
+        where T : Aggregate<TState>
+        where TState : AggregateState, new();
+
     Task Save<TAggregateId, T, TState>(T aggregate)
         where TAggregateId : AggregateId
         where T : Aggregate<TState> 

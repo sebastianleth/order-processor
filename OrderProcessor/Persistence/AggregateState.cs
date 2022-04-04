@@ -1,3 +1,6 @@
 ﻿namespace OrderProcessor.Persistence;
 
-public abstract record AggregateState(int Version = -1);
+public abstract record AggregateState
+{
+    public int Version { get; init;  } = -1;
+}
