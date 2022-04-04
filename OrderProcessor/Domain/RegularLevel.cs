@@ -2,6 +2,6 @@
 
 class RegularLevel : ICustomerLevel
 {
-    public string Name => "Regular level";
-    public decimal Discount => 0;
+    public string Name => "Regular";
+    public decimal DiscountPercentage => 0;
 }

@@ -1,4 +1,5 @@
 ﻿using OrderProcessor.Domain;
+using OrderProcessor.Email;
 
 namespace OrderProcessor.Handlers;
 
@@ -15,12 +16,16 @@ public class PlaceOrderHandler : ICommandHandler<Commands.PlaceOrder>
 
     public async Task Handle(Commands.PlaceOrder command)
     {
-        var customerId = CustomerId.FromEmail(command.CustomerEmail);
+        var customerId = CustomerId.FromEmail(command.Email);
         var customer = await _repository.Load<CustomerId, Customer, CustomerState>(customerId, Customer.Initialize);
 
-        var placedOrder = customer.Handle(command);
+        var orderPlaced = customer.Handle(command);
 
         await _repository.Save<CustomerId, Customer, CustomerState>(customer);
-        await _emailSender.SendEmail(customer.State.Email, placedOrder, customer.State.CustomerLevel);
+
+        var parameters = EmailParameters.From(customer, orderPlaced);
+        await _emailSender.SendEmail(parameters);
     }
+
+    
 }

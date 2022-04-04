@@ -95,7 +95,8 @@ public static class DeterministicGuid
 
 	private static void SwapBytes(byte[] guid, int left, int right)
 	{
-		byte temp = guid[left];
+        // ReSharper disable once SwapViaDeconstruction
+        byte temp = guid[left];
 		guid[left] = guid[right];
 		guid[right] = temp;
 	}

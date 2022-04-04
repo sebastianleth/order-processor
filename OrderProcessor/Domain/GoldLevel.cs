@@ -2,6 +2,6 @@
 
 class GoldLevel : ICustomerLevel
 {
-    public string Name => "Gold level";
-    public decimal Discount => 15;
+    public string Name => "Gold";
+    public decimal DiscountPercentage => 15;
 }

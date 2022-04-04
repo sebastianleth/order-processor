@@ -10,21 +10,21 @@ namespace OrderProcessor.Domain
         [Fact]
         public void GivenRegularCustomer_WhenGetDiscount_ThenZero()
         {
-            new RegularLevel().Discount
+            new RegularLevel().DiscountPercentage
                 .ShouldBe(0);
         }
 
         [Fact]
         public void GivenSilverCustomer_WhenGetDiscount_ThenTen()
         {
-            new SilverLevel().Discount
+            new SilverLevel().DiscountPercentage
                 .ShouldBe(10);
         }
 
         [Fact]
         public void GivenGoldCustomer_WhenGetDiscount_ThenFifteen()
         {
-            new GoldLevel().Discount
+            new GoldLevel().DiscountPercentage
                 .ShouldBe(15);
         }
     }

@@ -2,6 +2,6 @@
 
 class SilverLevel : ICustomerLevel
 {
-    public string Name => "Silver level";
-    public decimal Discount => 10;
+    public string Name => "Silver";
+    public decimal DiscountPercentage => 10;
 }

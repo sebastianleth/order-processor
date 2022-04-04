@@ -12,11 +12,10 @@ namespace OrderProcessor.Domain
         [Fact]
         public void GivenCustomer_WhenCreate_ThenStatusRegular()
         {
-            var time = Instant.MaxValue;
             var aggregateId = new CustomerId(Guid.NewGuid());
             var customer = Customer.Initialize(aggregateId, new CustomerState());
 
-            customer.Handle(new CreateCustomer(MessageId.New, time, "email@gmail.com"));
+            customer.Handle(new CreateCustomer(MessageId.New, "email@gmail.com"));
 
             customer.State.CustomerLevel
                 .ShouldBeAssignableTo<RegularLevel>();

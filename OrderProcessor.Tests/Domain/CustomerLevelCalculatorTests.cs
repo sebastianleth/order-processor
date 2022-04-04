@@ -23,7 +23,7 @@ namespace OrderProcessor.Domain
             {
                 CustomerLevel = new RegularLevel(),
                 Orders = ImmutableArray.Create(
-                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 400))
+                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 400, 0))
             };
 
             CustomerLevelCalculator.Determine(customerWithOrders, _now)
@@ -37,8 +37,8 @@ namespace OrderProcessor.Domain
             {
                 CustomerLevel = new RegularLevel(),
                 Orders = ImmutableArray.Create(
-                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 200),
-                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 200))
+                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 200, 0),
+                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 200, 0))
             };
 
             CustomerLevelCalculator.Determine(customerWithOrders, _now)
@@ -53,7 +53,7 @@ namespace OrderProcessor.Domain
                 CustomerLevelChangeTime = _now.Minus(Duration.FromDays(8)),
                 CustomerLevel = new SilverLevel(),
                 Orders = ImmutableArray.Create(
-                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700))
+                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700, 0))
             };
 
             CustomerLevelCalculator.Determine(customerWithOrders, _now)
@@ -68,7 +68,7 @@ namespace OrderProcessor.Domain
                 CustomerLevelChangeTime = _now.Minus(Duration.FromDays(7)),
                 CustomerLevel = new SilverLevel(),
                 Orders = ImmutableArray.Create(
-                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700))
+                    new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700, 0))
             };
 
             CustomerLevelCalculator.Determine(customerWithOrders, _now)

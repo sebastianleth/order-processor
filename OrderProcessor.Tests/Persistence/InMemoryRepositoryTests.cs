@@ -67,17 +67,16 @@ namespace OrderProcessor.Persistence
         public async Task GivenExistingChangedAggregate_WhenSaveUnchangedSecondInstanceOfSameAggregate_ThenFailByOptimisticConcurrency()
         {
             var aggregateId = CustomerId.FromEmail("email@gmail.com");
-            var time = Instant.MaxValue;
             var aggregate = Customer.Initialize(aggregateId, new CustomerState());
             await _sut.Save<CustomerId, Customer, CustomerState>(aggregate);
 
             var firstInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Initialize);
             var secondInstance = await _sut.Load<CustomerId, Customer, CustomerState>(aggregateId, Customer.Initialize);
 
-            firstInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
+            firstInstance.Handle(new CreateCustomer(MessageId.New, "email@gmail.com"));
             await _sut.Save<CustomerId, Customer, CustomerState>(firstInstance);
 
-            secondInstance.Handle(new CreateCustomer(MessageId.New, time, "first@gmail.com"));
+            secondInstance.Handle(new CreateCustomer(MessageId.New, "email@gmail.com"));
             var exception = await Should.ThrowAsync<DomainException>(async () => await _sut.Save<CustomerId, Customer, CustomerState>(secondInstance));
 
             exception.Message

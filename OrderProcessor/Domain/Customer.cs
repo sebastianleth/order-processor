@@ -18,7 +18,7 @@ namespace OrderProcessor.Domain
 
             ApplyState(State with
             {
-                CreatedTime = command.Time,
+                CreatedTime = Now,
                 Email = command.Email,
                 CustomerLevel = new RegularLevel()
             });
@@ -29,7 +29,6 @@ namespace OrderProcessor.Domain
         public Order Handle(Commands.PlaceOrder command)
         {
             EnsureExists();
-            EnsureOrderDoesNotExist(command);
 
             var customerLevel = CustomerLevelCalculator.Determine(State, Now);
             var order = CreateOrder(command, customerLevel);
@@ -44,25 +43,17 @@ namespace OrderProcessor.Domain
             return order;
         }
 
-        void EnsureOrderDoesNotExist(Commands.PlaceOrder command)
+        static Order CreateOrder(Commands.PlaceOrder command, ICustomerLevel customerLevel)
         {
             var orderId = new OrderId(command.Id.Value);
 
-            if (State.Orders.Any(order => order.Id == orderId))
-            {
-                throw new DomainException($"Order {orderId} already exists on customer {Id}");
-            }
+            var discountGiven = (customerLevel.DiscountPercentage / 100) * command.Total;
+            var total = command.Total - discountGiven;
+
+            return new Order(orderId, Now, total, discountGiven);
         }
 
-        Order CreateOrder(Commands.PlaceOrder command, ICustomerLevel customerLevel)
-        {
-            var orderId = new OrderId(command.Id.Value);
-            var total = command.Total * ((100 - customerLevel.Discount) / 100);
-
-            return new Order(orderId, Now, total);
-        }
-
-        bool CustomerLevelChanged(ICustomerLevel customerLevel) => customerLevel.GetType() == State.CustomerLevel.GetType();
+        bool CustomerLevelChanged(ICustomerLevel customerLevel) => customerLevel.GetType() != State.CustomerLevel.GetType();
 
         static Instant Now => SystemClock.Instance.GetCurrentInstant();
     }

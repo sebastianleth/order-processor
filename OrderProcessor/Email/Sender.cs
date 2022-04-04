@@ -1,4 +1,6 @@
 ﻿
+using NodaTime;
+
 namespace OrderProcessor.Email;
 
 class Sender : ISender
@@ -10,7 +12,7 @@ class Sender : ISender
         _logger = logger;
     }
 
-    public Task SendEmail(string email, Domain.Order order, Domain.ICustomerLevel customerLevel)
+    public Task SendEmail(EmailParameters parameters)
     {
         var body = @"
 
@@ -18,12 +20,25 @@ class Sender : ISender
 
             Your order has been placed.
 
-            Total:  DKK {total}
+            Total:      DKK {total}
+            Discount:   DKK {discount}
 
-            Your current and future level is {customerLevel}, that allows for a {discount}% discount!
+            You have placed {orderCount} orders for a total of DKK {ordersSum} since {since}.
+
+            Your customer level is {customerLevel} since {upgradeTime}, which allows for a {discountPercentage}% discount!
         ";
 
-        _logger.Information(body, email, order.Total, customerLevel.Name, customerLevel.Discount);
+        _logger.Information(
+            body, 
+            parameters.Email, 
+            parameters.OrderPlaced.Total,
+            parameters.OrderPlaced.DiscountGiven,
+            parameters.OrderCount,
+            parameters.OrdersSum,
+            parameters.EarliestOrderTime,
+            parameters.CustomerLevel.Name, 
+            parameters.TimeOfLastUpgrade,
+            parameters.CustomerLevel.DiscountPercentage);
 
         return Task.CompletedTask;
     }
