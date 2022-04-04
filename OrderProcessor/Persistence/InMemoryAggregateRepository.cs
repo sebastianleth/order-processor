@@ -4,19 +4,19 @@ namespace OrderProcessor.Persistence
 {
     class InMemoryAggregateRepository : IAggregateRepository
     {
-        readonly ConcurrentDictionary<Guid, AggregateData> _aggregates = new();
+        readonly ConcurrentDictionary<Guid, object> _aggregates = new();
 
         public Task Save<TAggregateId, T, TState>(T aggregate)
             where TAggregateId : AggregateId
             where T : Aggregate<TState> 
             where TState : AggregateState, new()
         {
-            if (AggregateExists(aggregate.Id) && aggregate.Version <= 0)
+            if (AggregateExists(aggregate.Id) && aggregate.State.Version <= 0)
             {
                 throw new DomainException($"{aggregate.GetType().Name} {aggregate.Id} already exists, and cannot be created anew");
             }
 
-            if (AggregateExists(aggregate.Id) && AggregateChanged(aggregate.Id, aggregate.Version))
+            if (AggregateExists(aggregate.Id) && AggregateChanged<TState>(aggregate.Id, aggregate.State.Version))
             {
                 throw new DomainException($"{aggregate.GetType().Name} {aggregate.Id} was changed by another actor");
             }
@@ -36,8 +36,7 @@ namespace OrderProcessor.Persistence
                 throw new DomainException($"{typeof(T).Name} {aggregateId} does not exist");
             }
 
-            var aggregateData = _aggregates[aggregateId.Value];
-            var state = (TState) aggregateData.State;
+            var state = GetState<TState>(aggregateId);
             var aggregate = aggregateFactory(aggregateId, state);
 
             return Task.FromResult(aggregate);
@@ -45,15 +44,16 @@ namespace OrderProcessor.Persistence
 
         void WriteAggregateData<T, TState>(T aggregate) 
             where T : Aggregate<TState> 
-            where TState : new()
+            where TState : AggregateState, new()
         {
-            _aggregates[aggregate.Id.Value] = new AggregateData(aggregate.State!, aggregate.Version);
+            _aggregates[aggregate.Id.Value] = aggregate.State!;
         }
 
-        bool AggregateChanged(AggregateId aggregateId, int newVersion) => _aggregates[aggregateId.Value].Version >= newVersion;
+        bool AggregateChanged<TState>(AggregateId aggregateId, int newVersion) where TState : AggregateState => 
+            GetState<TState>(aggregateId).Version >= newVersion;
 
         bool AggregateExists(AggregateId aggregateId)  => _aggregates.ContainsKey(aggregateId.Value);
 
-        record AggregateData(object State, int Version);
+        TState GetState<TState>(AggregateId aggregateId) => (TState)_aggregates[aggregateId.Value];
     }
 }

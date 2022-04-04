@@ -2,5 +2,5 @@
 
 public interface ISender
 {
-    Task SendEmail(string email);
+    Task SendEmail(string email, Domain.Order orderPlaced, Domain.ICustomerLevel customerLevel);
 }

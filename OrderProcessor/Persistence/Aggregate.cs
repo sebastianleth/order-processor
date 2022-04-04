@@ -1,6 +1,6 @@
 ﻿namespace OrderProcessor.Persistence;
 
-public abstract class Aggregate<TState> where TState : new()
+public abstract class Aggregate<TState> where TState : AggregateState, new()
 {
     protected Aggregate(AggregateId id, TState state)
     {
@@ -9,8 +9,6 @@ public abstract class Aggregate<TState> where TState : new()
     }
 
     public AggregateId Id { get; }
-
-    public int Version { get; private set; } = -1;
 
     public TState State { get; private set; }
 
@@ -32,9 +30,8 @@ public abstract class Aggregate<TState> where TState : new()
 
     protected void ApplyState(TState state)
     {
-        State = state;
-        Version++;
+        State = state with { Version = state.Version + 1 };
     }
 
-    bool Exists() => Version > -1;
+    bool Exists() => State.Version > -1;
 }

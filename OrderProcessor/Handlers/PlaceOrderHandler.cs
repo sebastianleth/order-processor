@@ -18,9 +18,9 @@ public class PlaceOrderHandler : ICommandHandler<Commands.PlaceOrder>
         var customerId = CustomerId.FromEmail(command.CustomerEmail);
         var customer = await _repository.Load<CustomerId, Customer, CustomerState>(customerId, Customer.Initialize);
 
-        customer.Handle(command);
+        var placedOrder = customer.Handle(command);
 
         await _repository.Save<CustomerId, Customer, CustomerState>(customer);
-        await _emailSender.SendEmail("Order placed!");
+        await _emailSender.SendEmail(customer.State.Email, placedOrder, customer.State.CustomerLevel);
     }
 }

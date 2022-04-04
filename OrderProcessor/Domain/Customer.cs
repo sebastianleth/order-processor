@@ -29,6 +29,7 @@ namespace OrderProcessor.Domain
         public Order Handle(Commands.PlaceOrder command)
         {
             EnsureExists();
+            EnsureOrderDoesNotExist(command);
 
             var customerLevel = CustomerLevelCalculator.Determine(State, Now);
             var order = CreateOrder(command, customerLevel);
@@ -41,6 +42,16 @@ namespace OrderProcessor.Domain
             });
 
             return order;
+        }
+
+        void EnsureOrderDoesNotExist(Commands.PlaceOrder command)
+        {
+            var orderId = new OrderId(command.Id.Value);
+
+            if (State.Orders.Any(order => order.Id == orderId))
+            {
+                throw new DomainException($"Order {orderId} already exists on customer {Id}");
+            }
         }
 
         Order CreateOrder(Commands.PlaceOrder command, ICustomerLevel customerLevel)
