@@ -11,7 +11,6 @@ public static class ServiceRegistrations
     {
         services.AddLogging();
         services.AddTime();
-        services.AddDomain();
         services.AddProcessing();
         services.AddHandlers();
         services.AddEmail();
@@ -31,11 +30,6 @@ public static class ServiceRegistrations
     static void AddTime(this IServiceCollection services)
     {
         services.AddSingleton<IClock>(SystemClock.Instance);
-    }
-
-    static void AddDomain(this IServiceCollection services)
-    {
-        services.AddSingleton<ICustomerLevelCalculator, CustomerLevelCalculator>();
     }
 
     static void AddProcessing(this IServiceCollection services)
@@ -65,7 +59,6 @@ public static class ServiceRegistrations
         services.AddSingleton<Func<CustomerId, CustomerState, Customer>>(provider => (id, state) => new Customer(
             id,
             state,
-            provider.GetService<ICustomerLevelCalculator>()!,
             provider.GetService<IClock>()!));
     }
 

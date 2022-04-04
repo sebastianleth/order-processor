@@ -6,17 +6,37 @@ using Xunit;
 
 namespace OrderProcessor.Domain
 {
-    public class CustomerLevelCalculatorTests
+    public class LevelTests
     {
         static readonly IClock Clock = new FakeClock(SystemClock.Instance.GetCurrentInstant());
-        readonly ICustomerLevelCalculator _sut = new CustomerLevelCalculator(Clock);
         readonly Instant _now = Clock.GetCurrentInstant();
+
+        [Fact]
+        public void GivenRegularCustomer_WhenGetDiscount_ThenZero()
+        {
+            new RegularLevel().DiscountPercentage
+                .ShouldBe(0);
+        }
+
+        [Fact]
+        public void GivenSilverCustomer_WhenGetDiscount_ThenTen()
+        {
+            new SilverLevel().DiscountPercentage
+                .ShouldBe(10);
+        }
+
+        [Fact]
+        public void GivenGoldCustomer_WhenGetDiscount_ThenFifteen()
+        {
+            new GoldLevel().DiscountPercentage
+                .ShouldBe(15);
+        }
 
         [Fact]
         public void GivenNewCustomer_WhenDetermineLevel_ThenRegular()
         {
-            _sut.Determine(new CustomerState())
-                .CustomerLevel.ShouldBeOfType<RegularLevel>();
+            new RegularLevel().DetermineLevelUp(new CustomerState(), _now)
+                .NextLevel.ShouldBeOfType<RegularLevel>();
         }
 
         [Fact]
@@ -24,13 +44,13 @@ namespace OrderProcessor.Domain
         {
             var stateWithOrders = new CustomerState
             {
-                CustomerLevel = new RegularLevel(),
+                Level = new RegularLevel(),
                 Orders = ImmutableArray.Create(
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 400, 0))
             };
 
-            _sut.Determine(stateWithOrders)
-                .CustomerLevel.ShouldBeOfType<RegularLevel>();
+            new RegularLevel().DetermineLevelUp(stateWithOrders, _now)
+                .NextLevel.ShouldBeOfType<RegularLevel>();
         }
 
         [Fact]
@@ -38,14 +58,14 @@ namespace OrderProcessor.Domain
         {
             var stateWithOrders = new CustomerState
             {
-                CustomerLevel = new RegularLevel(),
+                Level = new RegularLevel(),
                 Orders = ImmutableArray.Create(
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 200, 0),
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 200, 0))
             };
 
-            _sut.Determine(stateWithOrders)
-                .CustomerLevel.ShouldBeOfType<SilverLevel>();
+            new RegularLevel().DetermineLevelUp(stateWithOrders, _now)
+                .NextLevel.ShouldBeOfType<SilverLevel>();
         }
 
         [Fact]
@@ -53,14 +73,14 @@ namespace OrderProcessor.Domain
         {
             var stateWithOrders = new CustomerState
             {
-                CustomerLevelChangeTime = _now.Minus(Duration.FromDays(8)),
-                CustomerLevel = new SilverLevel(),
+                LastLevelUp = _now.Minus(Duration.FromDays(8)),
+                Level = new SilverLevel(),
                 Orders = ImmutableArray.Create(
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700, 0))
             };
 
-            _sut.Determine(stateWithOrders)
-                .CustomerLevel.ShouldBeOfType<GoldLevel>();
+            new SilverLevel().DetermineLevelUp(stateWithOrders, _now)
+                .NextLevel.ShouldBeOfType<GoldLevel>();
         }
 
         [Fact]
@@ -68,14 +88,14 @@ namespace OrderProcessor.Domain
         {
             var stateWithOrders = new CustomerState
             {
-                CustomerLevelChangeTime = _now.Minus(Duration.FromDays(7)),
-                CustomerLevel = new SilverLevel(),
+                LastLevelUp = _now.Minus(Duration.FromDays(7)),
+                Level = new SilverLevel(),
                 Orders = ImmutableArray.Create(
                     new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700, 0))
             };
 
-            _sut.Determine(stateWithOrders)
-                .CustomerLevel.ShouldBeOfType<SilverLevel>();
+            new SilverLevel().DetermineLevelUp(stateWithOrders, _now)
+                .NextLevel.ShouldBeOfType<SilverLevel>();
         }
     }
 }

@@ -12,8 +12,7 @@ namespace OrderProcessor.Persistence
     {
         readonly IAggregateRepository<CustomerId, Customer> _sut = new InMemoryAggregateRepository<CustomerId, Customer, CustomerState>(Factory);
 
-        static Customer Factory(CustomerId id, CustomerState state) =>
-            new Customer(id, state, new CustomerLevelCalculator(SystemClock.Instance), SystemClock.Instance);
+        static Customer Factory(CustomerId id, CustomerState state) => new(id, state, SystemClock.Instance);
 
 
         [Fact]

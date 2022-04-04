@@ -6,7 +6,7 @@ namespace OrderProcessor.Email;
 public record Parameters(
     string? Email,
     Domain.Order OrderPlaced,
-    Domain.ICustomerLevel CustomerLevel,
+    Domain.ILevel CustomerLevel,
     int OrderCount,
     decimal OrdersSum,
     Instant EarliestOrderTime,
@@ -15,9 +15,9 @@ public record Parameters(
     public static Parameters From(Customer customer, Order orderPlaced) => new(
         customer.State.Email,
         orderPlaced,
-        customer.State.CustomerLevel,
+        customer.State.Level,
         customer.State.Orders.Length,
         customer.State.Orders.Sum(o => o.Total),
         customer.State.Orders.Min(o => o.Time),
-        customer.State.CustomerLevelChangeTime);
+        customer.State.LastLevelUp);
 }

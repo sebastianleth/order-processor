@@ -14,11 +14,11 @@ namespace OrderProcessor.Domain
         {
             var clock = SystemClock.Instance;
             var aggregateId = new CustomerId(Guid.NewGuid());
-            var customer = new Customer(aggregateId, new CustomerState(), new CustomerLevelCalculator(clock), clock);
+            var customer = new Customer(aggregateId, new CustomerState(), clock);
 
             customer.Handle(new CreateCustomer(MessageId.New, "email@gmail.com"));
 
-            customer.State.CustomerLevel
+            customer.State.Level
                 .ShouldBeAssignableTo<RegularLevel>();
         }
     }
