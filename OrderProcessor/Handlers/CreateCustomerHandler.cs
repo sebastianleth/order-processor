@@ -16,7 +16,7 @@ public class CreateCustomerHandler : ICommandHandler<Commands.CreateCustomer>
         var customerId = CustomerId.FromEmail(command.Email);
         var customer = await _repository.New(customerId);
 
-        customer.Handle(command);
+        customer.Create(command);
 
         await _repository.Insert(customer);
     }

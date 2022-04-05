@@ -13,7 +13,7 @@ namespace OrderProcessor.Domain
             _clock = clock;
         }
 
-        public Customer Handle(Commands.CreateCustomer command)
+        public Customer Create(Commands.CreateCustomer command)
         {
             EnsureDoesNotExist();
 
@@ -27,19 +27,22 @@ namespace OrderProcessor.Domain
             return this;
         }
 
-        public Order Handle(Commands.PlaceOrder command)
+        public Order PlaceOrder(Commands.PlaceOrder command)
         {
             EnsureExists();
 
             var now = _clock.GetCurrentInstant();
-            var levelResult = State.Level.DetermineLevelUp(State, now);
-            var order = Order.Create(command.Id.ToOrderId, command.Total, levelResult.NextLevel, now);
+            var order = Order.Create(new OrderId(command.Id.Value), command.Total, now);
+            var levelResult = State.Level.DetermineLevelUp(State, order, now);
+
+            order = order.ApplyDiscount(levelResult.NextLevel);
 
             ApplyState(State with
             {
                 Orders = State.Orders
                     .Append(order)
-                    .ToImmutableArray(),
+                    .ToImmutableList()
+                    .WithValueSemantics(),
 
                 Level = levelResult.NextLevel,
                 LastLevelUp = levelResult.LevelUp ? _clock.GetCurrentInstant() : State.LastLevelUp

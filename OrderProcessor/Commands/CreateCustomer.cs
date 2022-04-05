@@ -1,7 +1,7 @@
 namespace OrderProcessor.Commands
 {
     public record CreateCustomer(
-        Messaging.MessageId Id,
+        MessageId Id,
         string Email
     ) : Messaging.Message(Id), ICommand;
 }

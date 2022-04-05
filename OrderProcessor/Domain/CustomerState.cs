@@ -10,5 +10,5 @@ public record CustomerState : AggregateState
     public Instant Created { get; init; }
     public ILevel Level { get; init; } = new RegularLevel();
     public Instant LastLevelUp { get; init; }
-    public ImmutableArray<Order> Orders { get; init; } = ImmutableArray<Order>.Empty;
+    public ImmutableListWithValueSemantics<Order> Orders { get; init; } = ImmutableList<Order>.Empty.WithValueSemantics();
 }

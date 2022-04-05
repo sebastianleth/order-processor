@@ -51,6 +51,7 @@ public static class ServiceRegistrations
     static void AddEmail(this IServiceCollection services)
     {
         services.AddTransient<Email.ISender, Email.Sender>();
+        services.AddTransient<Email.IComposer, Email.Composer>();
     }
 
     static void AddPersistence(this IServiceCollection services)

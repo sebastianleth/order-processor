@@ -3,16 +3,16 @@ using NodaTime;
 
 namespace OrderProcessor.Domain;
 
-class RegularLevel : ILevel
+record RegularLevel : ILevel
 {
     public string Name => "Regular";
     public decimal DiscountPercentage => 0;
-    decimal OrderSumForLevelUp => 300;
-    decimal OrderCountForLevelUp => 2;
+    static decimal OrderSumForLevelUp => 300;
+    static decimal OrderCountForLevelUp => 2;
 
-    public LevelResult DetermineLevelUp(CustomerState state, Instant now)
+    public LevelResult DetermineLevelUp(CustomerState state, Order placedOrder, Instant now)
     {
-        var orderTotals = OrderTotals.Build(state, now);
+        var orderTotals = OrderTotals.Get(state, placedOrder.Total, now);
         var enoughTotalSum = orderTotals.OrderSumLastThirtyDays > OrderSumForLevelUp;
         var enoughOrders = orderTotals.OrderCountLastThirtyDays >= OrderCountForLevelUp;
 

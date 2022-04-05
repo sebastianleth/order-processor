@@ -7,5 +7,5 @@ public interface ILevel
     string Name { get; }
     decimal DiscountPercentage { get;  }
 
-    LevelResult DetermineLevelUp(CustomerState state, Instant now);
+    LevelResult DetermineLevelUp(CustomerState state, Order placedOrder, Instant now);
 }
