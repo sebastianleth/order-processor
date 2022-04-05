@@ -18,7 +18,7 @@ public class LoggingHandlerDecorator<T>: ICommandHandler<T> where T : Commands.I
 
     public Task Handle(T command)
     {
-        _logger.Information("Handling command {commandType}: {command}", command.GetType(), JsonConvert.SerializeObject(command));
+        _logger.Information("Handling command {commandType}: {command}", command.GetType().Name, JsonConvert.SerializeObject(command));
 
         return _innerHandler.Handle(command);
     }
