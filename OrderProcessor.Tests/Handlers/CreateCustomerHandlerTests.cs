@@ -1,28 +1,28 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Moq;
+﻿using System.Threading.Tasks;
+using NodaTime;
+using OrderProcessor.Domain;
+using Shouldly;
 using Xunit;
 
 namespace OrderProcessor.Handlers
 {
-    public class CreateCustomerHandlerTests
+    public class CreateCustomerHandlerTests : HandlerFixture
     {
         readonly ICommandHandler<Commands.CreateCustomer> _sut;
 
         public CreateCustomerHandlerTests()
         {
-            //_sut = new CreateCustomerHandler()
+            _sut = new CreateCustomerHandler(Repository);
         }
 
         [Fact]
-        public async Task GivenMessagingClient_WhenProcess_ThenTryDequeueTwice()
+        public async Task GivenCommand_WhenHandle_ThenCustomerCreated()
         {
-        }
+            await _sut.Handle(new Commands.CreateCustomer(MessageId.New, CustomerEmail));
 
-        [Fact]
-        public async Task GivenMessagingClient_AndMessagesInQueue_WhenProcess_ThenInvokeHandlers()
-        {
+            var customer = await Repository.Load(CustomerId.FromEmail(CustomerEmail));
 
+            customer.ShouldNotBeNull();
         }
     }
 }

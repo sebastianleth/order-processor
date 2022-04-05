@@ -2,7 +2,6 @@
 using NodaTime;
 using OrderProcessor.Commands;
 using OrderProcessor.Domain;
-using OrderProcessor.Messaging;
 using Shouldly;
 using Xunit;
 
@@ -11,9 +10,8 @@ namespace OrderProcessor.Persistence
     public class InMemoryRepositoryTests
     {
         const string CustomerEmail = "email@gmail.com";
-        readonly IAggregateRepository<CustomerId, Customer> _sut = new InMemoryAggregateRepository<CustomerId, Customer, CustomerState>(AggregateFactory);
-        static Customer AggregateFactory(CustomerId id, CustomerState state) => new(id, state, SystemClock.Instance);
-
+        static Customer CustomerFactory(CustomerId id, CustomerState state) => new(id, state, SystemClock.Instance);
+        readonly IAggregateRepository<CustomerId, Customer> _sut = new InMemoryAggregateRepository<CustomerId, Customer, CustomerState>(CustomerFactory);
 
         [Fact]
         public async Task GivenNotExistingAggregate_WhenLoad_ThenFail()
