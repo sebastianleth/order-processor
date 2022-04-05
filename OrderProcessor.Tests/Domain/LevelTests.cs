@@ -20,23 +20,31 @@ namespace OrderProcessor.Domain
         }
 
         [Fact]
+        public void GivenLevelsFactory_WhenCompare_ThenAsExpected()
+        {
+            Levels.Regular.ShouldBe(new RegularLevel());
+            Levels.Silver.ShouldBe(new SilverLevel());
+            Levels.Gold.ShouldBe(new GoldLevel());
+        }
+
+        [Fact]
         public void GivenRegularCustomer_WhenGetDiscount_ThenZero()
         {
-            new RegularLevel().DiscountPercentage
+            Levels.Regular.DiscountPercentage
                 .ShouldBe(0);
         }
 
         [Fact]
         public void GivenSilverCustomer_WhenGetDiscount_ThenTen()
         {
-            new SilverLevel().DiscountPercentage
+            Levels.Silver.DiscountPercentage
                 .ShouldBe(10);
         }
 
         [Fact]
         public void GivenGoldCustomer_WhenGetDiscount_ThenFifteen()
         {
-            new GoldLevel().DiscountPercentage
+            Levels.Gold.DiscountPercentage
                 .ShouldBe(15);
         }
 
@@ -44,16 +52,16 @@ namespace OrderProcessor.Domain
         public void GivenNewCustomer_WithZeroOrders_WhenDetermineLevel_WithTotalOrderSumOfZero_ThenRegular()
         {
             var placedOrder = Order.Create(OrderId.New, 0, _now);
-            new RegularLevel().DetermineLevelUp(new CustomerState(), placedOrder, _now)
-                .NextLevel.ShouldBeOfType<RegularLevel>();
+            Levels.Regular.DetermineLevelUp(new CustomerState(), placedOrder, _now)
+                .Level.ShouldBeOfType<RegularLevel>();
         }
 
         [Fact]
         public void GivenNewCustomer_WithZeroOrders_WhenDetermineLevel_WithTotalOrderSumLargerThan300_ThenRegular()
         {
             var placedOrder = Order.Create(OrderId.New, 400, _now);
-            new RegularLevel().DetermineLevelUp(new CustomerState(), placedOrder, _now)
-                .NextLevel.ShouldBeOfType<RegularLevel>();
+            Levels.Regular.DetermineLevelUp(new CustomerState(), placedOrder, _now)
+                .Level.ShouldBeOfType<RegularLevel>();
         }
 
         [Fact]
@@ -61,15 +69,15 @@ namespace OrderProcessor.Domain
         {
             var stateWithOrders = new CustomerState
             {
-                Level = new RegularLevel(),
+                Level = Levels.Regular,
                 Orders = ImmutableList
                     .Create(new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 400, 0))
                     .WithValueSemantics()
             };
 
             var placedOrder = Order.Create(OrderId.New, 0, _now);
-            new RegularLevel().DetermineLevelUp(stateWithOrders, placedOrder, _now)
-                .NextLevel.ShouldBeOfType<SilverLevel>();
+            Levels.Regular.DetermineLevelUp(stateWithOrders, placedOrder, _now)
+                .Level.ShouldBeOfType<SilverLevel>();
         }
 
         [Fact]
@@ -77,15 +85,15 @@ namespace OrderProcessor.Domain
         {
             var stateWithOrders = new CustomerState
             {
-                Level = new RegularLevel(),
+                Level = Levels.Regular,
                 Orders = ImmutableList
                     .Create(new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 100, 0))
                     .WithValueSemantics()
             };
 
             var placedOrder = Order.Create(OrderId.New, 300, _now);
-            new RegularLevel().DetermineLevelUp(stateWithOrders, placedOrder, _now)
-                .NextLevel.ShouldBeOfType<SilverLevel>();
+            Levels.Regular.DetermineLevelUp(stateWithOrders, placedOrder, _now)
+                .Level.ShouldBeOfType<SilverLevel>();
         }
 
         [Fact]
@@ -93,7 +101,7 @@ namespace OrderProcessor.Domain
         {
             var stateWithOrders = new CustomerState
             {
-                Level = new RegularLevel(),
+                Level = Levels.Regular,
                 Orders = ImmutableList
                     .Create(
                         new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 200, 0),
@@ -102,8 +110,8 @@ namespace OrderProcessor.Domain
             };
 
             var placedOrder = Order.Create(OrderId.New, 0, _now);
-            new RegularLevel().DetermineLevelUp(stateWithOrders, placedOrder, _now)
-                .NextLevel.ShouldBeOfType<SilverLevel>();
+            Levels.Regular.DetermineLevelUp(stateWithOrders, placedOrder, _now)
+                .Level.ShouldBeOfType<SilverLevel>();
         }
 
         [Fact]
@@ -112,41 +120,42 @@ namespace OrderProcessor.Domain
             var stateWithOrders = new CustomerState
             {
                 LastLevelUp = _now.Minus(Duration.FromDays(8)),
-                Level = new SilverLevel(),
+                Level = Levels.Silver,
                 Orders = ImmutableList
                             .Create(new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700, 0))
                             .WithValueSemantics()
             };
 
             var placedOrder = Order.Create(OrderId.New, 0, _now);
-            new SilverLevel().DetermineLevelUp(stateWithOrders, placedOrder, _now)
-                .NextLevel.ShouldBeOfType<GoldLevel>();
+            Levels.Silver.DetermineLevelUp(stateWithOrders, placedOrder, _now)
+                .Level.ShouldBeOfType<GoldLevel>();
         }
 
         [Fact]
         public void GivenSilverCustomer_WithSingleOrderInLastThirtyDays_WithSumLargerThan600_WithCustomerLevelChanged7DaysAgo_WhenDetermineLevel_ThenSilver()
         {
+            var placedOrder = Order.Create(OrderId.New, 0, _now);
             var stateWithOrders = new CustomerState
             {
                 LastLevelUp = _now.Minus(Duration.FromDays(7)),
-                Level = new SilverLevel(),
+                Level = Levels.Silver,
                 Orders = ImmutableList
                             .Create(new Order(OrderId.New, _now.Minus(Duration.FromDays(1)), 700, 0))
                             .WithValueSemantics()
             };
 
-            var placedOrder = Order.Create(OrderId.New, 0, _now);
-            new SilverLevel().DetermineLevelUp(stateWithOrders, placedOrder, _now)
-                .NextLevel.ShouldBeOfType<SilverLevel>();
+            Levels.Silver.DetermineLevelUp(stateWithOrders, placedOrder, _now)
+                .Level.ShouldBeOfType<SilverLevel>();
         }
 
         [Fact]
         public void GivenNewButGoldCustomer_WithZeroOrders_WhenDetermineLevel_WithTotalOrderSumOfZero_ThenStillGold()
         {
             var placedOrder = Order.Create(OrderId.New, 0, _now);
-            var state = new CustomerState { Level = new GoldLevel() };
+            var state = new CustomerState { Level = Levels.Gold };
+
             state.Level.DetermineLevelUp(state, placedOrder, _now)
-                .NextLevel.ShouldBeOfType<GoldLevel>();
+                .Level.ShouldBeOfType<GoldLevel>();
         }
     }
 }

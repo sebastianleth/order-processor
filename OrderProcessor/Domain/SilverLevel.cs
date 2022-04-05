@@ -16,7 +16,7 @@ record SilverLevel : ILevel
 
         if (enoughTotalSum && lastLevelUpMoreThanAWeekAgo)
         {
-            return new LevelResult(new GoldLevel(), LevelUp: true);
+            return new LevelResult(Levels.Gold, LevelUp: true);
         }
 
         return new LevelResult(this, LevelUp: false);

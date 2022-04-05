@@ -1,3 +1,3 @@
 ﻿namespace OrderProcessor.Domain;
 
-public record LevelResult(ILevel NextLevel, bool LevelUp);
+public record LevelResult(ILevel Level, bool LevelUp);

@@ -22,7 +22,7 @@ namespace OrderProcessor.Domain
             {
                 Created = _clock.GetCurrentInstant(),
                 Email = command.Email,
-                Level = new RegularLevel()
+                Level = Levels.Regular
             });
 
             return this;
@@ -36,7 +36,7 @@ namespace OrderProcessor.Domain
             var order = Order.Create(new OrderId(command.Id.Value), command.Total, now);
             var levelResult = State.Level.DetermineLevelUp(State, order, now);
 
-            order = order.ApplyDiscount(levelResult.NextLevel);
+            order = order.ApplyDiscount(levelResult.Level);
 
             ApplyState(State with
             {
@@ -45,7 +45,7 @@ namespace OrderProcessor.Domain
                     .ToImmutableList()
                     .WithValueSemantics(),
 
-                Level = levelResult.NextLevel,
+                Level = levelResult.Level,
                 LastLevelUp = levelResult.LevelUp ? _clock.GetCurrentInstant() : State.LastLevelUp
             });
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using NodaTime;
+﻿using NodaTime;
 
 namespace OrderProcessor.Domain;
 
@@ -18,7 +17,7 @@ record RegularLevel : ILevel
 
         if (enoughTotalSum && enoughOrders)
         {
-            return new LevelResult(new SilverLevel(), LevelUp: true);
+            return new LevelResult(Levels.Silver, LevelUp: true);
         }
 
         return new LevelResult(this, LevelUp: false);

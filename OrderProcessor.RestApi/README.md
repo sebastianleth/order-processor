@@ -33,9 +33,11 @@ Observe the log statements in the Console window.
 ### Improvements
 
 Following improvements would make sense:
+- Expand the model to include order lines, products, and more.
 - Real message queue with retries, listening, distributed consumers
-- Real database (document?)
-- Idempotency on commands already handled
+- Real database (document db?)
+- Enable idempotency on commands already handled, in case of more-than-once-delivery
+- Handle error cases? Now, commands are just discarded if not able to execute (customer create attempted twice, order place on non-existing customer).
 - Allow customers to change their e-mail address ;)
 - Implement queries. Only commands are supported now.
 - Use better JSON serialization on Id types in Swagger UI / ASP.NET

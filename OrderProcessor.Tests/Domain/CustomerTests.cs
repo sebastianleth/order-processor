@@ -25,7 +25,7 @@ namespace OrderProcessor.Domain
                     Version = 0,
                     Created = Clock.GetCurrentInstant(),
                     Email = CustomerEmail,
-                    Level = new RegularLevel()
+                    Level = Levels.Regular
                 });
         }
 
@@ -46,7 +46,7 @@ namespace OrderProcessor.Domain
                     Version = 1,
                     Created = Clock.GetCurrentInstant(),
                     Email = "email@gmail.com",
-                    Level = new RegularLevel()
+                    Level = Levels.Regular
                 });
         }
 
@@ -70,7 +70,7 @@ namespace OrderProcessor.Domain
                     Version = 2,
                     Created = Clock.GetCurrentInstant(),
                     Email = "email@gmail.com",
-                    Level = new SilverLevel(),
+                    Level = Levels.Silver,
                     LastLevelUp = _now
                 });
         }

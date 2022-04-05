@@ -8,7 +8,7 @@ public record CustomerState : AggregateState
 {
     public string? Email { get; init; }
     public Instant Created { get; init; }
-    public ILevel Level { get; init; } = new RegularLevel();
+    public ILevel Level { get; init; } = Levels.Regular;
     public Instant LastLevelUp { get; init; }
     public ImmutableListWithValueSemantics<Order> Orders { get; init; } = ImmutableList<Order>.Empty.WithValueSemantics();
 }

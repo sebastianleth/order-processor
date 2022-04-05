@@ -16,7 +16,7 @@ namespace OrderProcessor.Email
         {
             var now = SystemClock.Instance.GetCurrentInstant();
             var yesterday = now.Minus(Duration.FromDays(1));
-            var level = new SilverLevel();
+            var level = Levels.Silver;
             var parameters = new Parameters(
                 "email@gmail.com",
                 Order.Create(OrderId.New, total: 100, now).ApplyDiscount(level),
