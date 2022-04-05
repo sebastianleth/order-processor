@@ -36,6 +36,7 @@ Following improvements would make sense:
 - Expand the model to include order lines, products, and more.
 - Real message queue with retries, listening, distributed consumers
 - Real database (document db?)
+- Split API (producer) and processor (consumer) into seperate processes, for scaling & decoupling 
 - Enable idempotency on commands already handled, in case of more-than-once-delivery
 - Handle error cases? Now, commands are just discarded if not able to execute (customer create attempted twice, order place on non-existing customer).
 - Allow customers to change their e-mail address ;)
