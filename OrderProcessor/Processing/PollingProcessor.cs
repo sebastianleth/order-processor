@@ -25,21 +25,16 @@ class PollingProcessor : IProcessor
     {
         while (true)
         {
-            // Need generic approach for reading all types of messages, instead of this per-type-basis
-            // ... and an acknowledged queue, so that the message is retried in case of failure
-            // ... and a proper listening queue, instead of this polling
-
             try
             {
                 await HandleCreateCustomer();
                 await HandlePlaceOrder();
+                await DelayNoThrow(cancellationToken);
             }
             catch (Exception e)
             {
-                _logger.Error(e, "Unhandled exception in PollingProcessor");
+                LogError(e);
             }
-
-            await Task.Delay(_pollingInterval);
 
             if (cancellationToken.IsCancellationRequested)
             {
@@ -65,6 +60,23 @@ class PollingProcessor : IProcessor
         if (gotMessage)
         {
             await _placeOrderHandler.Handle(command!);
+        }
+    }
+
+    void LogError(Exception e)
+    {
+        _logger.Error(e, "Unhandled exception in PollingProcessor");
+    }
+
+    Task DelayNoThrow(CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Task.Delay(_pollingInterval, cancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            return Task.CompletedTask;
         }
     }
 }
