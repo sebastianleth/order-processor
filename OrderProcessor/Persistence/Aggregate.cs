@@ -1,9 +1,14 @@
-﻿namespace OrderProcessor.Persistence;
+﻿using Serilog;
+
+namespace OrderProcessor.Persistence;
 
 public abstract class Aggregate<TState> where TState : AggregateState, new()
 {
-    protected Aggregate(AggregateId id, TState state)
+    readonly ILogger _logger;
+
+    protected Aggregate(AggregateId id, TState state, ILogger logger)
     {
+        _logger = logger;
         Id = id;
         State = state;
     }
@@ -31,6 +36,8 @@ public abstract class Aggregate<TState> where TState : AggregateState, new()
     protected void ApplyState(TState state)
     {
         State = state with { Version = state.Version + 1 };
+
+        _logger.Information("New state applied to {Aggregate} {Id}: {State}", this, Id, State);
     }
 
     bool Exists() => State.Version > -1;

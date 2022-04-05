@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using NodaTime;
 using OrderProcessor.Persistence;
+using Serilog;
 
 namespace OrderProcessor.Domain
 {
@@ -8,7 +9,7 @@ namespace OrderProcessor.Domain
     {
         readonly IClock _clock;
 
-        public Customer(CustomerId id, CustomerState state, IClock clock) : base(id, state)
+        public Customer(CustomerId id, CustomerState state, IClock clock, ILogger logger) : base(id, state, logger)
         {
             _clock = clock;
         }

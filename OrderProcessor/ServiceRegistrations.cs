@@ -60,7 +60,8 @@ public static class ServiceRegistrations
         services.AddSingleton<Func<CustomerId, CustomerState, Customer>>(provider => (id, state) => new Customer(
             id,
             state,
-            provider.GetService<IClock>()!));
+            provider.GetService<IClock>()!,
+            provider.GetService<ILogger>()!));
     }
 
     static void AddMessaging(this IServiceCollection services)

@@ -10,7 +10,7 @@ namespace OrderProcessor.Persistence
     public class InMemoryRepositoryTests
     {
         const string CustomerEmail = "email@gmail.com";
-        static Customer CustomerFactory(CustomerId id, CustomerState state) => new(id, state, SystemClock.Instance);
+        static Customer CustomerFactory(CustomerId id, CustomerState state) => new(id, state, SystemClock.Instance, Serilog.Log.Logger);
         readonly IAggregateRepository<CustomerId, Customer> _sut = new InMemoryAggregateRepository<CustomerId, Customer, CustomerState>(CustomerFactory);
 
         [Fact]

@@ -14,7 +14,7 @@ class Sender : ISender
 
     public Task SendEmail(Email email)
     {
-        _logger.Information(email.Body);
+        _logger.Information("E-mail sent: {Body}", email.Body);
 
         return Task.CompletedTask;
     }

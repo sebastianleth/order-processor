@@ -12,7 +12,7 @@ namespace OrderProcessor.Domain
         const string CustomerEmail = "email@gmail.com";
         static readonly IClock Clock = new FakeClock(SystemClock.Instance.GetCurrentInstant());
         static readonly Instant _now = Clock.GetCurrentInstant();
-        readonly Customer _sut = new(new CustomerId(Guid.NewGuid()), new CustomerState(), Clock);
+        readonly Customer _sut = new(new CustomerId(Guid.NewGuid()), new CustomerState(), Clock, Serilog.Log.Logger);
 
         [Fact]
         public void GivenNewCustomer_WhenCreate_ThenStateAsExpected()
