@@ -1,14 +1,11 @@
-﻿
-using Serilog;
-
-namespace OrderProcessor.Processing;
+﻿namespace OrderProcessor.Processing;
 
 class PollingProcessor : IProcessor
 {
     readonly Messaging.IClient _messagingClient;
     readonly Handlers.ICommandHandler<Commands.CreateCustomer> _createCustomerHandler;
     readonly Handlers.ICommandHandler<Commands.PlaceOrder> _placeOrderHandler;
-    readonly ILogger _logger;
+    readonly Serilog.ILogger _logger;
     readonly TimeSpan _pollingInterval = TimeSpan.FromMilliseconds(100);
 
     public PollingProcessor(
@@ -42,7 +39,7 @@ class PollingProcessor : IProcessor
                 _logger.Error(e, "Unhandled exception in PollingProcessor");
             }
 
-            await Task.Delay(_pollingInterval, cancellationToken);
+            await Task.Delay(_pollingInterval);
 
             if (cancellationToken.IsCancellationRequested)
             {

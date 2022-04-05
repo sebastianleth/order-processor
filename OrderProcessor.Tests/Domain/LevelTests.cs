@@ -139,5 +139,14 @@ namespace OrderProcessor.Domain
             new SilverLevel().DetermineLevelUp(stateWithOrders, placedOrder, _now)
                 .NextLevel.ShouldBeOfType<SilverLevel>();
         }
+
+        [Fact]
+        public void GivenNewButGoldCustomer_WithZeroOrders_WhenDetermineLevel_WithTotalOrderSumOfZero_ThenStillGold()
+        {
+            var placedOrder = Order.Create(OrderId.New, 0, _now);
+            var state = new CustomerState { Level = new GoldLevel() };
+            state.Level.DetermineLevelUp(state, placedOrder, _now)
+                .NextLevel.ShouldBeOfType<GoldLevel>();
+        }
     }
 }
