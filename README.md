@@ -24,7 +24,7 @@ Observe the log statements in the Console window.
 
 **Persistence** - Repository and framework for loading/saving aggregates and their state.
 
-**Processing** - Processesing of commands from the message queue, by invoking the appropriate command handlers.
+**Processing** - Processesing of commands from the message queue.
 
 ### Command flow
 
