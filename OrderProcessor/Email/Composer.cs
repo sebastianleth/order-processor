@@ -6,17 +6,18 @@ class Composer : IComposer
     {
         var body = $@"
 
-                To:     {parameters.Email}
+To:     {parameters.Email}
 
-                Your order has been placed.
+Your order has been placed.
 
-                Total:      DKK {parameters.OrderPlaced.Total}
-                Discount:   DKK {parameters.OrderPlaced.DiscountGiven}
+Total:      DKK {parameters.OrderPlaced.Total}
+Discount:   DKK {parameters.OrderPlaced.DiscountGiven}
 
-                You have placed {parameters.OrderCount} orders for a total of DKK {parameters.OrdersSum} since {parameters.EarliestOrderTime}.
+You have placed {parameters.OrderCount} orders for a total of DKK {parameters.OrdersSum} since {parameters.EarliestOrderTime}.
 
-                Your customer level is {parameters.Level.Name} since {parameters.LastLevelUpTime}, which allows for a {parameters.Level.DiscountPercentage}% discount!
-        ";
+Your customer level is {parameters.Level.Name} since {parameters.LastLevelUpTime}, which allows for a {parameters.Level.DiscountPercentage}% discount!
+
+";
 
         return new Email(body);
     }

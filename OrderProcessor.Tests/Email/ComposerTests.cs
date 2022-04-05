@@ -28,17 +28,19 @@ namespace OrderProcessor.Email
 
 
             var expected = $@"
-            To:     email@gmail.com
 
-            Your order has been placed.
+To:     email@gmail.com
 
-            Total:      DKK 90,0
-            Discount:   DKK 10,0
+Your order has been placed.
 
-            You have placed 1 orders for a total of DKK 90 since {yesterday}.
+Total:      DKK 90,0
+Discount:   DKK 10,0
 
-            Your customer level is Silver since {yesterday}, which allows for a 10% discount!
-        ";
+You have placed 1 orders for a total of DKK 90 since {yesterday}.
+
+Your customer level is Silver since {yesterday}, which allows for a 10% discount!
+
+";
 
             var actual = _sut.Do(parameters);
 
